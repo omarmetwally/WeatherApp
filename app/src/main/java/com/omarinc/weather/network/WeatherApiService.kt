@@ -12,6 +12,7 @@ interface WeatherApiService {
     suspend fun getForecast(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
-        @Query("lang") language: String
+        @Query("lang") language: String,
+        @Query("units") units:String
     ): Response<WeatherResponse>
 }

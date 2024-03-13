@@ -35,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures{
+        viewBinding =true
+        dataBinding =true
+    }
 }
 
 dependencies {
@@ -58,6 +62,14 @@ dependencies {
     //ViewModel
     implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+
+    //Google Maps
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+
+    //animation
+    implementation ("com.airbnb.android:lottie:6.4.0")
+
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")

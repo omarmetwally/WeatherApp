@@ -37,10 +37,11 @@ class WeatherRemoteDataSourceImpl private constructor(private val context: Conte
 
     override  fun getWeatherResponse(
         coordinate: Coordinates,
-        language: String
+        language: String,
+        units:String
     ): Flow<Response<WeatherResponse>> = flow {
         try {
-            val response = weatherService.getForecast(coordinate.lat,coordinate.lon,language)
+            val response = weatherService.getForecast(coordinate.lat,coordinate.lon,language,units)
             if (response.isSuccessful && response.body() != null) {
                 emit(response)
             } else {

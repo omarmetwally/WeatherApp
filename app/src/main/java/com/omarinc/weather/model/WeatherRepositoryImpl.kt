@@ -26,11 +26,11 @@ class WeatherRepositoryImpl(
 
     override suspend fun getWeatherResponse(
         coordinate: Coordinates,
-        language: String
+        language: String,  units:String
     ): Flow<Response<WeatherResponse>> {
 
         return withContext(Dispatchers.IO){
-            weatherRemoteDataSource.getWeatherResponse(coordinate,language)
+            weatherRemoteDataSource.getWeatherResponse(coordinate,language,units)
         }
     }
 }

@@ -1,3 +1,55 @@
 <resources>
     <string name="app_name">Weather</string>
+
+    <string name="_24_c">24°C</string>
+    <string name="_2_PM">2 PM</string>
+
+    <string name="cloudy_day">Cloudy Day</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="_40_26_c">24/26°c</string>
+    <string name="pressure">Pressure</string>
+    <string name="_1021_hpa">1021 hpa</string>
+    <string name="_77">77%</string>
+    <string name="humidity">Humidity</string>
+    <string name="_2_06_m_s">2.06 m/s</string>
+    <string name="wind">Wind</string>
+    <string name="_0">0 %</string>
+    <string name="visibility">Visibility</string>
+    <string name="_6000_m">6000 m</string>
+    <string name="ultra_violet">Ultra Violet</string>
+    <string name="_0_0">0.0</string>
+    <string name="cloud">Cloud</string>
+    <string name="_0percentage">0%</string>
+    <string name="_3_58_am">03:58 AM</string>
+    <string name="to">TO</string>
+    <string name="add_alert">Add Alert</string>
+    <string name="from">FROM</string>
+    <string name="alert_noS">Alert</string>
+    <string name="notification">Notification</string>
+    <string name="save">SAVE</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map</string>
+    <string name="location">Location</string>
+    <string name="meter_sec">Meter/Sec</string>
+    <string name="language">Language</string>
+    <string name="arabic">Arabic</string>
+    <string name="notifications">Notifications</string>
+    <string name="enable">Enable</string>
+    <string name="english">English</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="mile_hour">Mile/Hour</string>
+    <string name="disable">Disable</string>
+    <string name="temperature">Temperature</string>
+    <string name="celsius">Celsius</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="ok">OK</string>
+    <string name="date">28 August</string>
+    <string name="k">K</string>
+    <string name="c">C</string>
+    <string name="f">F</string>
+    <string name="today">TODAY</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="percentage">%</string>
 </resources>

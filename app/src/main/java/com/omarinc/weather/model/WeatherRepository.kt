@@ -6,6 +6,7 @@ import retrofit2.Response
 interface WeatherRepository {
     suspend fun getWeatherResponse(
         coordinate: Coordinates,
-        language: String
+        language: String,
+        units:String
     ): Flow<Response<WeatherResponse>>
 }
