@@ -2,36 +2,32 @@ package com.omarinc.weather
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.omarinc.weather.currentHomeWeather.view.MyDailyAdapter
 import com.omarinc.weather.currentHomeWeather.view.MyHourAdapter
+import com.omarinc.weather.currentHomeWeather.view.setIcon
 import com.omarinc.weather.currentHomeWeather.viewmodel.CurrentWeatherViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.ActivityMainBinding
 import com.omarinc.weather.model.Coordinates
+import com.omarinc.weather.model.ForecastEntry
 import com.omarinc.weather.model.WeatherRepositoryImpl
+import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.network.ApiState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.utilities.Constants
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: CurrentWeatherViewModel
@@ -64,11 +60,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         binding.rvDays.apply {
             adapter = myDailyAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
         }
         binding.rvHours.apply {
             adapter = myHourAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
         }
 
 
@@ -100,11 +94,13 @@ class MainActivity : AppCompatActivity() {
 
                     is ApiState.Success -> {
 
-                        binding.loadingLottie.visibility=View.GONE
                         Log.i(TAG, "observeWeather: sus ${result.weatherResponse}")
                         viewModel.extractFiveDayForecast(result.weatherResponse.list)
                         viewModel.extractTodayForecast(result.weatherResponse.list)
+                        setVisibility()
                         setupRecyclerView()
+                        currentForecastUI(result.weatherResponse)
+                        detailsForecastUI(result.weatherResponse.list)
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.fiveDayForecast.value}")
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.todayForecast.value}")
 
@@ -171,5 +167,57 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+    fun setVisibility()
+    {
+        binding.loadingLottie.visibility=View.GONE
+        binding.ivLocation.visibility=View.VISIBLE
+        binding.tvLocationName.visibility=View.VISIBLE
+        binding.tvDate.visibility=View.VISIBLE
+        binding.ivWeather.visibility=View.VISIBLE
+
+        binding.tvCurrentDegree.visibility=View.VISIBLE
+        binding.tvWeatherStatus.visibility=View.VISIBLE
+
+        binding.cvDetails.visibility=View.VISIBLE
+
+
+
+
+    }
+
+    fun currentForecastUI(weather: WeatherResponse)
+    {
+
+        val currentDate = SimpleDateFormat("EEE, d MMM -yy", Locale.getDefault()).format(Date())
+        binding.tvLocationName.text= "${weather.city.name} ,${weather.city.country}"
+        binding.tvDate.text="$currentDate"
+        setIcon(viewModel.todayForecast.value.get(0).icon,binding.ivWeather)
+
+        binding.tvCurrentDegree.text="${viewModel.todayForecast.value.get(0).temp.toInt()}°C"
+        binding.tvWeatherStatus.text="${viewModel.todayForecast.value.get(0).condition}\nFeels like ${viewModel.todayForecast.value.get(0).temp.toInt()}°C"
+
+        var date = Date(weather.city.sunrise * 1000)
+
+        val time = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+        binding.tvDynamicSunrise.text="${time.format(date)}"
+        date= Date(weather.city.sunset * 1000)
+        binding.tvDynamicSunset.text="${time.format(date)}"
+
+
+        Log.i(TAG, "currentForecastUI: ${weather.city.coord.lat} "+weather.city.coord.lon)
+    }
+
+    fun detailsForecastUI(list: List<ForecastEntry>)
+    {
+        binding.tvDynamicPressure.text="${list.get(0).main.pressure}mb"
+        binding.tvDynamicHumidity.text="${list.get(0).main.humidity}%"
+        binding.tvDynamicWind.text="${list.get(0).wind.speed}m/s"
+        binding.tvDynamicCloud.text="${list.get(0).clouds.all}%"
+
+
+    }
 
 }

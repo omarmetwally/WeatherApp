@@ -6,13 +6,11 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.omarinc.weather.R
 import com.omarinc.weather.databinding.ItemDaysBinding
-import com.omarinc.weather.model.DailyForecastUI
-import com.omarinc.weather.model.DailyWeather
+import com.omarinc.weather.model.DailyForecast
 
-class MyDailyAdapter : ListAdapter<DailyForecastUI, MyDailyAdapter.ViewHolder>(
+class MyDailyAdapter : ListAdapter<DailyForecast, MyDailyAdapter.ViewHolder>(
     DailyForecastUIDiffUtil()
 ) {
 
@@ -35,18 +33,18 @@ class MyDailyAdapter : ListAdapter<DailyForecastUI, MyDailyAdapter.ViewHolder>(
     inner class ViewHolder(val binding: ItemDaysBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
-class DailyForecastUIDiffUtil : DiffUtil.ItemCallback<DailyForecastUI>() {
-    override fun areItemsTheSame(oldItem: DailyForecastUI, newItem: DailyForecastUI): Boolean {
+class DailyForecastUIDiffUtil : DiffUtil.ItemCallback<DailyForecast>() {
+    override fun areItemsTheSame(oldItem: DailyForecast, newItem: DailyForecast): Boolean {
         return oldItem.date == newItem.date
     }
 
-    override fun areContentsTheSame(oldItem: DailyForecastUI, newItem: DailyForecastUI): Boolean {
+    override fun areContentsTheSame(oldItem: DailyForecast, newItem: DailyForecast): Boolean {
         return oldItem == newItem
     }
 }
 fun setIcon(id: String, iv: ImageView){
     when (id) {
-        "01d" -> iv.setImageResource(R.drawable.sun)
+        "01d" -> iv.setImageResource(R.drawable.sunny)
         "02d" -> iv.setImageResource(R.drawable._02d)
         "03d" -> iv.setImageResource(R.drawable._03d)
         "04d" -> iv.setImageResource(R.drawable._04n)

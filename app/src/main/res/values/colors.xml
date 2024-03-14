@@ -5,11 +5,18 @@
     <color name="status_color">#fffbff</color>
     <color name="baseColor">#F5EFE7</color>
     <color name="active_color">#D8C4B6</color>
-    <color name="text_color">#213555</color>
+    <color name="card_background">#213555</color>
+    <color name="text_color">#FFFFFFFF</color>
+    <color name="ic_color">#C9FFFFFF</color>
+
     <color name="second_color">#4F709C</color>
     <color name="second_color_yellow">#D8C4B6</color>
 
     <color name="shrine_pink_100">#D8C4B6</color>
     <color name="shrine_pink_900">#817165</color>
     <color name="red">#F10808</color>
+    <color name="blue_sky">#5B9BD8</color>
+    <color name="blue_background">#B45494CF</color>
+
+
 </resources>

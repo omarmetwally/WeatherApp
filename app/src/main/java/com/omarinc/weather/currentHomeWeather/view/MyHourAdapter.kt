@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.weather.databinding.ItemHoursBinding
-import com.omarinc.weather.model.TodayForecastUI
+import com.omarinc.weather.model.TodayForecast
 
-class MyHourAdapter : ListAdapter<TodayForecastUI, MyHourAdapter.ViewHolder>(
+class MyHourAdapter : ListAdapter<TodayForecast, MyHourAdapter.ViewHolder>(
     TodayForecastUIDiffUtil()
 ) {
 
@@ -30,12 +30,12 @@ class MyHourAdapter : ListAdapter<TodayForecastUI, MyHourAdapter.ViewHolder>(
     inner class ViewHolder(val binding: ItemHoursBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
-class TodayForecastUIDiffUtil : DiffUtil.ItemCallback<TodayForecastUI>() {
-    override fun areItemsTheSame(oldItem: TodayForecastUI, newItem: TodayForecastUI): Boolean {
+class TodayForecastUIDiffUtil : DiffUtil.ItemCallback<TodayForecast>() {
+    override fun areItemsTheSame(oldItem: TodayForecast, newItem: TodayForecast): Boolean {
         return oldItem.time == newItem.time
     }
 
-    override fun areContentsTheSame(oldItem: TodayForecastUI, newItem: TodayForecastUI): Boolean {
+    override fun areContentsTheSame(oldItem: TodayForecast, newItem: TodayForecast): Boolean {
         return oldItem == newItem
     }
 }
