@@ -16,6 +16,7 @@ import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentHomeBinding
+import com.omarinc.weather.db.WeatherLocalDataSourceImpl
 import com.omarinc.weather.model.ForecastEntry
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.model.WeatherResponse
@@ -33,11 +34,12 @@ class HomeFragment : Fragment() {
     private  lateinit var binding: FragmentHomeBinding
     private val myDailyAdapter = MyDailyAdapter()
     private val myHourAdapter = MyHourAdapter()
+    private lateinit var viewModel: HomeViewModel
+
     companion object {
         fun newInstance() = HomeFragment()
     }
 
-    private lateinit var viewModel: HomeViewModel
 
     private  val TAG = "HomeFragment"
     override fun onCreateView(
@@ -58,7 +60,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
-                WeatherRemoteDataSourceImpl.getInstance(requireContext())
+                WeatherRemoteDataSourceImpl.getInstance(requireContext()),
+                WeatherLocalDataSourceImpl.getInstance(requireContext())
             ),
             requireActivity()
         )

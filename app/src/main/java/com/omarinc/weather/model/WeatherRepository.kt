@@ -9,4 +9,12 @@ interface WeatherRepository {
         language: String,
         units:String
     ): Flow<Response<WeatherResponse>>
+
+
+    suspend fun insertFavorite(city:FavoriteCity)
+    suspend fun deleteFavorite(city:FavoriteCity)
+    suspend fun getAllFavorites():Flow<List<FavoriteCity>>
+
+
+
 }

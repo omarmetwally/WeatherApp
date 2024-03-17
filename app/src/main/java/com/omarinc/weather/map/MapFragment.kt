@@ -1,24 +1,19 @@
-package com.omarinc.weather
+package com.omarinc.weather.map
 
 import android.location.Address
 import android.location.Geocoder
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
-import com.google.android.gms.common.api.Status
 
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.omarinc.weather.map.LocationBottomSheetFragment
+import com.omarinc.weather.R
 import java.io.IOException
 import java.util.Locale
 
@@ -45,6 +40,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
 
+
     }
 
 
@@ -54,14 +50,15 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         googleMap.setOnMapClickListener { latLng ->
             googleMap.clear()
             googleMap.addMarker(MarkerOptions().position(latLng))
-            // Here, latLng is the coordinate where the user tapped
-            // You can use latLng.latitude and latLng.longitude
+
             var addressText:String=""
             var addresses: List<Address>?
             try {
                 addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                 if (addresses != null) {
-                    addressText = addresses.firstOrNull()?.subAdminArea+" , "+addresses.firstOrNull()?.countryName ?: getString(R.string.address_not_found)
+                    addressText = addresses.firstOrNull()?.subAdminArea+" , "+addresses.firstOrNull()?.countryName ?: getString(
+                        R.string.address_not_found
+                    )
                 }
             } catch (e: IOException) {
                 addressText = "Unable to get address"
