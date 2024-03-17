@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
 }
 
@@ -68,6 +69,11 @@ dependencies {
 
     //Google Maps
     implementation("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+//    implementation ("com.google.android.libraries.places:places:2.4.0")
+
+
 
     //animation
     implementation ("com.airbnb.android:lottie:6.4.0")

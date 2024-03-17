@@ -12,7 +12,16 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="com.omarinc.weather.favorite.favoriteFragment"
+        android:name="com.omarinc.weather.favorite.view.favoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.omarinc.weather.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
 </navigation>
