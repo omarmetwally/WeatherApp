@@ -1,8 +1,10 @@
 package com.omarinc.weather.currentHomeWeather.viewmodel
 
 import android.content.Context
+import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -47,18 +49,22 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
                 }
                 .collect() { data ->
                     _weather.value = ApiState.Success(data.body()!!)
+
+
+
+
                 }
         }
     }
-
-    init {
-        startLocationUpdates()
-    }
+//
+//    init {
+//        startLocationUpdates()
+//    }
+    var coordinates: Coordinates = Coordinates(0.0, 0.0)
 
     @SuppressWarnings("MissingPermission")
     fun startLocationUpdates() {
         var locationCallback: LocationCallback
-        var coordinates: Coordinates = Coordinates(0.0, 0.0)
 
         val locationRequest = LocationRequest
             .create().apply {
@@ -91,6 +97,10 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
 
     }
 
+    lateinit var cityName:String
+    fun getCityName():Coordinates{
+        return coordinates
+    }
 
     fun onLocationUpdated(coordinate: Coordinates) {
         getCurrentWeather(coordinate, "en","metric")

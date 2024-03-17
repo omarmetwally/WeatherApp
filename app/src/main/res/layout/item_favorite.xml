@@ -9,12 +9,12 @@
     app:strokeWidth="0dp">
 
     <LinearLayout
+        android:id="@+id/linear_layoutFav"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_gravity="center"
         android:background="@color/blue_background"
-        android:gravity="center"
-        >
+        android:gravity="center">
 
         <TextView
             android:id="@+id/tv_city"

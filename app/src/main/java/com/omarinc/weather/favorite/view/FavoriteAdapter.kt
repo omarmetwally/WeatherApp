@@ -12,7 +12,7 @@ import com.omarinc.weather.databinding.ItemHoursBinding
 import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.TodayForecast
 
-class FavoriteAdapter(private val onClick:(city:FavoriteCity)->Unit) : ListAdapter<FavoriteCity, FavoriteAdapter.ViewHolder>(
+class FavoriteAdapter(private val onDeleteClick:(city:FavoriteCity)->Unit,private val onCityClick:(city:FavoriteCity)->Unit) : ListAdapter<FavoriteCity, FavoriteAdapter.ViewHolder>(
     FavoriteDiffUtil()
 ) {
 
@@ -27,8 +27,12 @@ class FavoriteAdapter(private val onClick:(city:FavoriteCity)->Unit) : ListAdapt
         with(holder.binding) {
             tvCity.text = currentFavoriteCity.cityName
             ivIconDelete.setOnClickListener{
-                onClick(currentFavoriteCity)
+                onDeleteClick(currentFavoriteCity)
             }
+
+        }
+        holder.binding.linearLayoutFav.setOnClickListener{
+            onCityClick(currentFavoriteCity)
         }
     }
     inner class ViewHolder(val binding: ItemFavoriteBinding) : RecyclerView.ViewHolder(binding.root)

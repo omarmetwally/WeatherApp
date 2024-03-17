@@ -23,7 +23,7 @@ import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import kotlinx.coroutines.launch
 import javax.security.auth.login.LoginException
 
-class favoriteFragment : Fragment(),OnClick {
+class favoriteFragment : Fragment() {
 
     companion object {
         fun newInstance() = favoriteFragment()
@@ -47,7 +47,6 @@ class favoriteFragment : Fragment(),OnClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onClick=this
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
@@ -73,9 +72,19 @@ class favoriteFragment : Fragment(),OnClick {
     private fun setupRecyclerView()
     {
 
-        myFavoriteAdapter=FavoriteAdapter {
-            onClick?.onDeleteFavoriteClick(it)
-        }
+        myFavoriteAdapter= FavoriteAdapter(
+            onDeleteClick = { city ->
+                viewModel.deleteFavorite(city)
+                Snackbar.make(binding.root,"${city.cityName} Deleted", Snackbar.LENGTH_SHORT).show()
+            },
+            onCityClick = { city ->
+                val action=favoriteFragmentDirections.actionFavoriteFragmentToHomeFragment()
+
+                action.city=city
+                findNavController().navigate(action)
+                Snackbar.make(binding.root,"${city.cityName} clicked", Snackbar.LENGTH_SHORT).show()
+            }
+        )
 
         binding.rvFavorites.apply {
             adapter=myFavoriteAdapter
@@ -103,12 +112,5 @@ class favoriteFragment : Fragment(),OnClick {
         }
     }
 
-    override fun onDeleteFavoriteClick(city: FavoriteCity) {
-        viewModel.deleteFavorite(city)
-        Snackbar.make(binding.root,"${city.cityName} Deleted", Snackbar.LENGTH_SHORT).show()
 
-    }
-
-    override fun onCityClick(city: FavoriteCity) {
-    }
 }

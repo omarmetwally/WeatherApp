@@ -2,6 +2,7 @@ package com.omarinc.weather.currentHomeWeather.view
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +13,13 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentHomeBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
+import com.omarinc.weather.model.Coordinates
 import com.omarinc.weather.model.ForecastEntry
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.model.WeatherResponse
@@ -49,15 +52,11 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-//
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-//        // TODO: Use the ViewModel
-//    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
@@ -70,11 +69,12 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         observeWeather()
 
-        if (checkPermissions()) {
-            viewModel.startLocationUpdates()
-        } else {
-            requestLocationPermissions()
-        }
+//
+//        if (checkPermissions()) {
+//            viewModel.startLocationUpdates()
+//        } else {
+//            requestLocationPermissions()
+//        }
     }
 
 
@@ -144,10 +144,20 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
 
         if (checkPermissions()) {
 //            getLocation()
-            viewModel.startLocationUpdates()
+
+            if (city != null) {
+                // Use the city argument as needed, for example:
+                Log.d(TAG, "City received: ${city.cityName}")
+                viewModel.getCurrentWeather(Coordinates(lat = city.latitude, lon = city.longitude), "en","metric")
+
+            }else {
+                viewModel.startLocationUpdates()
+
+            }
         } else {
             requestLocationPermissions()
         }
@@ -210,8 +220,12 @@ class HomeFragment : Fragment() {
 
     fun currentForecastUI(weather: WeatherResponse)
     {
-
         val currentDate = SimpleDateFormat("EEE, d MMM -yy", Locale.getDefault()).format(Date())
+        var coordinates: Coordinates = viewModel.getCityName()
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+
+
         binding.tvLocationName.text= "${weather.city.name} ,${weather.city.country}"
         binding.tvDate.text="$currentDate"
         setIcon(viewModel.todayForecast.value.get(0).icon,binding.ivWeather)
@@ -240,21 +254,6 @@ class HomeFragment : Fragment() {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
