@@ -26,7 +26,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class CurrentWeatherViewModel(private val _repo: WeatherRepository, val context: Context) :
+class HomeViewModel (private val _repo: WeatherRepository, val context: Context) :
     ViewModel() {
     private var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context.applicationContext)
@@ -141,24 +141,24 @@ class CurrentWeatherViewModel(private val _repo: WeatherRepository, val context:
 
 
 
- /*
-    //function to get only 3hr in the current day
-    fun extractTodayForecasts(forecasts: List<ForecastEntry>) {
-        viewModelScope.launch {
-            val todayString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val todayForecasts = forecasts.filter { it.dt_txt.startsWith(todayString) }.map {
-                val time = SimpleDateFormat("HH:mm", Locale.getDefault()).parse(it.dt_txt.substring(11, 16))
-                val formattedTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(time)
-                TodayForecast(
-                    formattedTime,
-                    it.main.temp,
-                    it.weather.first().description,
-                    it.weather.first().icon
-                )
-            }
-            _todayForecast.value = todayForecasts
-        }
-    }*/
+    /*
+       //function to get only 3hr in the current day
+       fun extractTodayForecasts(forecasts: List<ForecastEntry>) {
+           viewModelScope.launch {
+               val todayString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+               val todayForecasts = forecasts.filter { it.dt_txt.startsWith(todayString) }.map {
+                   val time = SimpleDateFormat("HH:mm", Locale.getDefault()).parse(it.dt_txt.substring(11, 16))
+                   val formattedTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(time)
+                   TodayForecast(
+                       formattedTime,
+                       it.main.temp,
+                       it.weather.first().description,
+                       it.weather.first().icon
+                   )
+               }
+               _todayForecast.value = todayForecasts
+           }
+       }*/
 
     fun extractTodayForecast(forecasts: List<ForecastEntry>) {
         viewModelScope.launch {
@@ -184,7 +184,7 @@ class CurrentWeatherViewModel(private val _repo: WeatherRepository, val context:
         }
     }
 
-    fun extractCurrentForecast():TodayForecast
+    fun extractCurrentForecast(): TodayForecast
     {
         return _todayForecast.value.get(0)
     }

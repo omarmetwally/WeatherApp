@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/homeFragment"
+            android:icon="@drawable/ic_home"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/favoriteFragment"
+            android:icon="@drawable/ic_round_favorite_24"
+            android:title="@string/favorite" />      <item
+
+        android:id="@+id/alertFragment"
+            android:icon="@drawable/ic_alert_notification"
+            android:title="@string/alert" />
+        <item
+            android:id="@+id/settingFragment"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings" />
+    </group>
+</menu>

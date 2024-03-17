@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Weather" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="android:fontFamily">@font/cooljazz</item>
+         <item name="colorPrimary">@color/blue_sky</item>
+<!--        <item name="android:fontFamily">@font/cooljazz</item>-->
     </style>
 
     <style name="Theme.Weather" parent="Base.Theme.Weather" />

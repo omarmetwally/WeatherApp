@@ -9,8 +9,8 @@ class ViewModelFactory (private val _repo:WeatherRepository
        ,val context: Context):ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(CurrentWeatherViewModel::class.java)){
-            return CurrentWeatherViewModel(_repo, context) as T
+        if(modelClass.isAssignableFrom(HomeViewModel::class.java)){
+            return HomeViewModel(_repo, context) as T
         }
         throw IllegalArgumentException("ViewModel Class not found")
     }

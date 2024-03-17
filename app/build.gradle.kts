@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("androidx.navigation.safeargs")
 
 }
 
@@ -46,6 +47,8 @@ dependencies {
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     kapt ("androidx.room:room-compiler:2.6.1")
     //Coroutines Dependencies
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
@@ -69,6 +72,9 @@ dependencies {
     //animation
     implementation ("com.airbnb.android:lottie:6.4.0")
 
+
+    implementation ("androidx.navigation:navigation-fragment:2.5.3")
+    implementation ("androidx.navigation:navigation-ui:2.5.3")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
