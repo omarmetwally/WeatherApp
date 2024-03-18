@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">الطقس</string>
+
+    <string name="_24_c">24°C</string>
+    <string name="_2_PM">2 مساءً</string>
+
+    <string name="cloudy_day">يوم غائم</string>
+    <string name="wednesday">الأربعاء</string>
+    <string name="city">مدينة</string>
+    <string name="country">بلد</string>
+    <string name="_40_26_c">24/26°م</string>
+    <string name="pressure">الضغط</string>
+    <string name="_0_hpa">0 هيكتوباسكال</string>
+    <string name="_0_precent">0%</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="_0_m_s">0 م/ث</string>
+    <string name="wind">الرياح</string>
+    <string name="_0">0 %</string>
+    <string name="sunset">غروب</string>
+    <string name="_0_m">0 م</string>
+    <string name="sunrise">شروق</string>
+    <string name="_0_0">0.0</string>
+    <string name="cloud">السحاب</string>
+    <string name="_0percentage">0%</string>
+    <string name="_3_58_am">03:58 صباحًا</string>
+    <string name="to">إلى</string>
+    <string name="add_alert">إضافة تنبيه</string>
+    <string name="from">من</string>
+    <string name="alert_noS">تنبيه</string>
+    <string name="notification">إشعار</string>
+    <string name="save">حفظ</string>
+    <string name="add_alarm">إضافة منبه</string>
+    <string name="gps">جي بي إس</string>
+    <string name="home">الرئيسية</string>
+    <string name="favorite">المفضلة</string>
+    <string name="alert">تنبيهات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="address_not_found">لم يتم العثور على العنوان</string>
+    <string name="map">خريطة</string>
+    <string name="location">الموقع</string>
+    <string name="language">اللغة</string>
+    <string name="arabic">العربية</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="enable">تفعيل</string>
+    <string name="english">الإنجليزية</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="mile_per_hour">ميل/ساعة</string>
+    <string name="meter_per_sec">متر/ثانية</string>
+    <string name="disable">تعطيل</string>
+    <string name="temperature">درجة الحرارة</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="kelvin">كلفن</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="ok">حسنًا</string>
+    <string name="date">28 أغسطس</string>
+    <string name="k">ك</string>
+    <string name="c">ج</string>
+    <string name="f">ف</string>
+    <string name="today">اليوم</string>
+    <string name="tomorrow">غدًا</string>
+    <string name="percentage">%</string>
+</resources>
+
+
+
+
+

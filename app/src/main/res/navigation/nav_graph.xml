@@ -33,4 +33,9 @@
         android:name="com.omarinc.weather.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.omarinc.weather.settings.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>

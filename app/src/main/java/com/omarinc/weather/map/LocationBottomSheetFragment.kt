@@ -17,6 +17,7 @@ import com.omarinc.weather.favorite.viewmodel.FavoriteViewModel
 import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 
 class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: Double) : BottomSheetDialogFragment() {
 
@@ -33,7 +34,9 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
-                WeatherLocalDataSourceImpl.getInstance(requireContext())
+                WeatherLocalDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext())
+
             ),
             requireActivity()
         )

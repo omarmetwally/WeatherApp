@@ -15,6 +15,9 @@ interface WeatherRepository {
     suspend fun deleteFavorite(city:FavoriteCity)
     suspend fun getAllFavorites():Flow<List<FavoriteCity>>
 
+    fun writeStringToSharedPreferences(key: String, value: String)
+    fun readStringFromSharedPreferences(key: String): String
+
 
 
 }

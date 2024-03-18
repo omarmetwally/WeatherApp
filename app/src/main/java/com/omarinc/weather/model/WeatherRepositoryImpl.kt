@@ -2,6 +2,7 @@ package com.omarinc.weather.model
 
 import com.omarinc.weather.db.WeatherLocalDataSource
 import com.omarinc.weather.network.WeatherRemoteDataSource
+import com.omarinc.weather.sharedpreferences.ISharedPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -9,7 +10,8 @@ import retrofit2.Response
 
 class WeatherRepositoryImpl(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
-    private val weatherLocalDataSource: WeatherLocalDataSource
+    private val weatherLocalDataSource: WeatherLocalDataSource,
+    private val settingSharedPreferences: ISharedPreferences
 ) : WeatherRepository {
 
     companion object {
@@ -19,10 +21,11 @@ class WeatherRepositoryImpl(
 
         fun getInstance(
             weatherRemoteDataSource: WeatherRemoteDataSource,
-            weatherLocalDataSource: WeatherLocalDataSource
+            weatherLocalDataSource: WeatherLocalDataSource,
+            settingSharedPreferences:ISharedPreferences
         ): WeatherRepositoryImpl {
             return instance ?: synchronized(this) {
-                instance ?: WeatherRepositoryImpl(weatherRemoteDataSource,weatherLocalDataSource).also { instance = it }
+                instance ?: WeatherRepositoryImpl(weatherRemoteDataSource,weatherLocalDataSource,settingSharedPreferences).also { instance = it }
             }
         }
     }
@@ -55,6 +58,14 @@ class WeatherRepositoryImpl(
         return withContext(Dispatchers.IO){
             weatherLocalDataSource.getFavoriteCities()
         }
+    }
+
+    override fun writeStringToSharedPreferences(key: String, value: String) {
+        settingSharedPreferences.writeStringToSharedPreferences(key,value)
+    }
+
+    override fun readStringFromSharedPreferences(key: String): String {
+       return settingSharedPreferences.readStringFromSharedPreferences(key)
     }
 
 

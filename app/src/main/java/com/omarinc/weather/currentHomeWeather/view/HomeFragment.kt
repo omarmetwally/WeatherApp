@@ -25,6 +25,7 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.network.ApiState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -60,7 +61,8 @@ class HomeFragment : Fragment() {
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
-                WeatherLocalDataSourceImpl.getInstance(requireContext())
+                WeatherLocalDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext())
             ),
             requireActivity()
         )

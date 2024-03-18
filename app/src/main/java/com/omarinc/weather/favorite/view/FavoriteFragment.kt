@@ -20,6 +20,7 @@ import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
 import javax.security.auth.login.LoginException
 
@@ -50,7 +51,8 @@ class favoriteFragment : Fragment() {
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
-                WeatherLocalDataSourceImpl.getInstance(requireContext())
+                WeatherLocalDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext())
             ),
             requireActivity()
         )

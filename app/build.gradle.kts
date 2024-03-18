@@ -50,6 +50,7 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.preference:preference:1.2.0")
     kapt ("androidx.room:room-compiler:2.6.1")
     //Coroutines Dependencies
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
