@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.layoutDirection
 import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
@@ -20,6 +22,7 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import com.omarinc.weather.utilities.Helpers
 import java.util.Locale
 
 class SettingFragment : Fragment() {
@@ -73,8 +76,8 @@ class SettingFragment : Fragment() {
                 else -> Constants.VALUE_ENGLISH
             }
             viewModel.writeStringToSharedPreferences(Constants.KEY_LANGUAGE, source)
-            changeAppLanguage(requireActivity(),source)
-            reloadApp()
+            Helpers.setAppLanguage(requireActivity(),source)
+//            reloadApp()
         }
 
         binding.rgTemp.setOnCheckedChangeListener { _, checkedId ->
@@ -85,6 +88,7 @@ class SettingFragment : Fragment() {
                 else -> Constants.VALUE_CELSIUS
             }
             viewModel.writeStringToSharedPreferences(Constants.KEY_TEMPERATURE_UNIT, source)
+//            requireActivity().recreate()
         }
 
         binding.rgWindSpeed.setOnCheckedChangeListener { _, checkedId ->
@@ -144,23 +148,15 @@ class SettingFragment : Fragment() {
     }
 
 
-    fun changeAppLanguage(activity: Activity, languageCode: String) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        val resources: Resources = activity.resources
-        val config: Configuration = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
+//    fun setAppLanguage(activity: Activity, languageCode: String) {
+//        val locale = Locale(languageCode)
+//        Locale.setDefault(locale)
+//        val resources: Resources = activity.resources
+//        val config: Configuration = resources.configuration
+//        config.setLocale(locale)
+//        resources.updateConfiguration(config, resources.displayMetrics)
+//    }
 
-    private fun reloadApp() {
-        val intent = requireActivity().packageManager.getLaunchIntentForPackage(
-            requireActivity().packageName
-        )
-        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        requireActivity().finish()
-        if (intent != null) {
-            startActivity(intent)
-        }
-    }
+
+
 }

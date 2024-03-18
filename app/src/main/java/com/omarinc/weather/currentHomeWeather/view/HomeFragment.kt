@@ -3,6 +3,7 @@ package com.omarinc.weather.currentHomeWeather.view
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.opengl.Visibility
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -25,10 +26,13 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.network.ApiState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import com.omarinc.weather.utilities.Helpers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,6 +43,7 @@ class HomeFragment : Fragment() {
     private val myDailyAdapter = MyDailyAdapter()
     private val myHourAdapter = MyHourAdapter()
     private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModelSettings: SettingViewModel
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -67,13 +72,14 @@ class HomeFragment : Fragment() {
             requireActivity()
         )
         viewModel = ViewModelProvider(requireActivity(), factory).get(HomeViewModel::class.java)
+        viewModelSettings = ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
 
         setupRecyclerView()
         observeWeather()
 
-//
+
 //        if (checkPermissions()) {
-//            viewModel.startLocationUpdates()
+//            viewModel.startLocationUpdates(viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),"")
 //        } else {
 //            requestLocationPermissions()
 //        }
@@ -113,17 +119,19 @@ class HomeFragment : Fragment() {
                 when (result) {
                     is ApiState.Loading -> {
                         Log.i(TAG, "observeWeather: loading")
+                        setVisibility(false)
                     }
 
                     is ApiState.Success -> {
-
+                        setVisibility(false)
                         Log.i(TAG, "observeWeather: sus ${result.weatherResponse}")
                         viewModel.extractFiveDayForecast(result.weatherResponse.list)
                         viewModel.extractTodayForecast(result.weatherResponse.list)
-                        setVisibility()
+                        setVisibility(true)
                         setupRecyclerView()
-                        currentForecastUI(result.weatherResponse)
                         detailsForecastUI(result.weatherResponse.list)
+                        currentForecastUI(result.weatherResponse)
+
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.fiveDayForecast.value}")
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.todayForecast.value}")
 
@@ -148,16 +156,20 @@ class HomeFragment : Fragment() {
         super.onStart()
         val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
 
+//      viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE)
         if (checkPermissions()) {
 //            getLocation()
 
             if (city != null) {
                 // Use the city argument as needed, for example:
                 Log.d(TAG, "City received: ${city.cityName}")
-                viewModel.getCurrentWeather(Coordinates(lat = city.latitude, lon = city.longitude), "en","metric")
+                viewModel.getCurrentWeather(Coordinates(lat = city.latitude, lon = city.longitude),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
 
             }else {
-                viewModel.startLocationUpdates()
+                viewModel.startLocationUpdates(viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
 
             }
         } else {
@@ -195,15 +207,19 @@ class HomeFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == Constants.LocationPermissionID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                viewModel.startLocationUpdates()
+                viewModel.startLocationUpdates(viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
             }
         }
     }
 
 
 
-    fun setVisibility()
+    fun setVisibility(visibility: Boolean)
     {
+
+        if(visibility)
+        {
         binding.loadingLottie.visibility=View.GONE
         binding.ivLocation.visibility=View.VISIBLE
         binding.tvLocationName.visibility=View.VISIBLE
@@ -212,8 +228,20 @@ class HomeFragment : Fragment() {
 
         binding.tvCurrentDegree.visibility=View.VISIBLE
         binding.tvWeatherStatus.visibility=View.VISIBLE
-
         binding.cvDetails.visibility=View.VISIBLE
+        }
+        else{
+            binding.loadingLottie.visibility=View.VISIBLE
+            binding.ivLocation.visibility=View.GONE
+            binding.tvLocationName.visibility=View.GONE
+            binding.tvDate.visibility=View.GONE
+            binding.ivWeather.visibility=View.GONE
+
+            binding.tvCurrentDegree.visibility=View.GONE
+            binding.tvWeatherStatus.visibility=View.GONE
+            binding.cvDetails.visibility=View.GONE
+
+        }
 
 
 
@@ -227,13 +255,38 @@ class HomeFragment : Fragment() {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
 
 
+//        lifecycleScope.launch {
+//            viewModel.todayForecast.collect {
+//                setIcon(it.get(1).icon,binding.ivWeather)
+//
+//                binding.tvCurrentDegree.text="${it.get(1).temp.toInt()}°${getString(R.string.c)}"
+//                binding.tvWeatherStatus.text="${it.get(1).condition}\n ${it.get(1).temp.toInt()}°${getString(R.string.c)}"
+//
+//            }
+//        }
+
+
 
         binding.tvLocationName.text= "${weather.city.name} ,${weather.city.country}"
         binding.tvDate.text="$currentDate"
-        setIcon(viewModel.todayForecast.value.get(0).icon,binding.ivWeather)
+        Log.i(TAG, "currentForecastUI: ${viewModel.todayForecast.value}")
 
-        binding.tvCurrentDegree.text="${viewModel.todayForecast.value.get(0).temp.toInt()}°C"
-        binding.tvWeatherStatus.text="${viewModel.todayForecast.value.get(0).condition}\nFeels like ${viewModel.todayForecast.value.get(0).temp.toInt()}°C"
+//        setIcon(viewModel.todayForecast.value.get(0).icon,binding.ivWeather)
+//
+//        binding.tvCurrentDegree.text="${viewModel.todayForecast.value.get(0).temp.toInt()}°${getString(R.string.c)}"
+//        binding.tvWeatherStatus.text="${viewModel.todayForecast.value.get(0).condition}"
+
+
+
+        if (viewModel.todayForecast.value.isNotEmpty()) {
+            val firstForecast = viewModel.todayForecast.value[0]
+            setIcon(firstForecast.icon, binding.ivWeather)
+            binding.tvCurrentDegree.text = "${firstForecast.temp}°${getString(R.string.c)}"
+            binding.tvWeatherStatus.text = firstForecast.condition
+        } else {
+            // Handle the case where there are no forecasts available
+            Log.d(TAG, "No forecasts available")
+        }
 
         var date = Date(weather.city.sunrise * 1000)
 
@@ -249,11 +302,17 @@ class HomeFragment : Fragment() {
 
     fun detailsForecastUI(list: List<ForecastEntry>)
     {
-        binding.tvDynamicPressure.text="${list.get(0).main.pressure}mb"
-        binding.tvDynamicHumidity.text="${list.get(0).main.humidity}%"
-        binding.tvDynamicWind.text="${list.get(0).wind.speed}m/s"
-        binding.tvDynamicCloud.text="${list.get(0).clouds.all}%"
+        val numberFormat = NumberFormat.getNumberInstance(Locale.getDefault())
 
+        val pressure = numberFormat.format(list[0].main.pressure)
+        val humidity = numberFormat.format(list[0].main.humidity)
+        val windSpeed = numberFormat.format(list[0].wind.speed)
+        val cloudiness = numberFormat.format(list[0].clouds.all)
+
+        binding.tvDynamicPressure.text = "${pressure} mb"
+        binding.tvDynamicHumidity.text = "${humidity}%"
+        binding.tvDynamicWind.text = "${windSpeed} m/s"
+        binding.tvDynamicCloud.text = "${cloudiness}%"
 
     }
 

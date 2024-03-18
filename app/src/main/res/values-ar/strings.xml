@@ -4,6 +4,7 @@
 
     <string name="_24_c">24°C</string>
     <string name="_2_PM">2 مساءً</string>
+    <string name="feels_like">تشعر أنها</string>
 
     <string name="cloudy_day">يوم غائم</string>
     <string name="wednesday">الأربعاء</string>
@@ -37,6 +38,8 @@
     <string name="alert">تنبيهات</string>
     <string name="settings">الإعدادات</string>
     <string name="address_not_found">لم يتم العثور على العنوان</string>
+    <string name="Latitude">خط العرض: </string>
+    <string name="Longitude">خط الطول: </string>
     <string name="map">خريطة</string>
     <string name="location">الموقع</string>
     <string name="language">اللغة</string>
@@ -54,9 +57,9 @@
     <string name="fahrenheit">فهرنهايت</string>
     <string name="ok">حسنًا</string>
     <string name="date">28 أغسطس</string>
-    <string name="k">ك</string>
-    <string name="c">ج</string>
-    <string name="f">ف</string>
+    <string name="k">كلفن</string>
+    <string name="c">م</string>
+    <string name="f">فهرنهايت</string>
     <string name="today">اليوم</string>
     <string name="tomorrow">غدًا</string>
     <string name="percentage">%</string>

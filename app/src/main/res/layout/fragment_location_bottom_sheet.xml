@@ -9,12 +9,12 @@
         android:id="@+id/tv_location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/location"/>
+        android:text="@string/location" />
     <TextView
         android:id="@+id/tvLat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Latitude: "/>
+        android:text="@string/Latitude"/>
 
     <TextView
         android:id="@+id/tvLng"

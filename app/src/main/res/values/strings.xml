@@ -3,6 +3,7 @@
 
     <string name="_24_c">24°C</string>
     <string name="_2_PM">2 PM</string>
+    <string name="feels_like">Feels like</string>
 
     <string name="cloudy_day">Cloudy Day</string>
     <string name="wednesday">Wednesday</string>
@@ -36,6 +37,9 @@
     <string name="alert">Alerts</string>
     <string name="settings">Settings</string>
     <string name="address_not_found">Address name not found</string>
+    <string name="Latitude">Latitude: </string>
+    <string name="Longitude">Longitude: </string>
+
 
     <string name="map">Map</string>
     <string name="location">Location</string>
@@ -57,7 +61,7 @@
     <string name="k">K</string>
     <string name="c">C</string>
     <string name="f">F</string>
-    <string name="today">TODAY</string>
+    <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="percentage">%</string>
 

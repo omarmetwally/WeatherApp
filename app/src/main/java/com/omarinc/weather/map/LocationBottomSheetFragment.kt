@@ -43,9 +43,9 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
         viewModel = ViewModelProvider(requireActivity(), factory).get(FavoriteViewModel::class.java)
 
 
-        binding.tvLocationName.text="Location: $location"
-        binding.tvLat.text = "Latitude: $lat"
-        binding.tvLng.text = "Longitude: $lng"
+        binding.tvLocationName.text="${getString(R.string.location)}  $location"
+        binding.tvLat.text = "${getString(R.string.Latitude)}  $lat"
+        binding.tvLng.text = "${getString(R.string.Longitude)} $lng"
 
         binding.btnSaveLocation.setOnClickListener {
             viewModel.insertFavorite(FavoriteCity(cityName = location, latitude = lat, longitude = lng))

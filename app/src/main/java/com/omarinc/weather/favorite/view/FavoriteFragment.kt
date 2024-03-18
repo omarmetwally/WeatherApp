@@ -81,7 +81,6 @@ class favoriteFragment : Fragment() {
             },
             onCityClick = { city ->
                 val action=favoriteFragmentDirections.actionFavoriteFragmentToHomeFragment()
-
                 action.city=city
                 findNavController().navigate(action)
                 Snackbar.make(binding.root,"${city.cityName} clicked", Snackbar.LENGTH_SHORT).show()

@@ -21,9 +21,9 @@ object Constants{
     const val VALUE_ARABIC = "ar"
     const val VALUE_ENABLE = "enable"
     const val VALUE_DISABLE = "disable"
-    const val VALUE_CELSIUS = "celsius"
-    const val VALUE_KELVIN = "kelvin"
-    const val VALUE_FAHRENHEIT = "fahrenheit"
+    const val VALUE_CELSIUS = "metric"
+    const val VALUE_KELVIN = "standard"
+    const val VALUE_FAHRENHEIT = "imperial"
 
 
 }

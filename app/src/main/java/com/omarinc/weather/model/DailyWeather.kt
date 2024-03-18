@@ -21,7 +21,7 @@ data class DailyForecast(
 
 data class TodayForecast(
     val time: String,
-    val temp: Double,
+    val temp: String,
     val condition: String,
     val icon: String
 )
