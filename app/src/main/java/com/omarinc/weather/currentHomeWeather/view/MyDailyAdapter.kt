@@ -62,6 +62,6 @@ fun setIcon(id: String, iv: ImageView){
         "11n" -> iv.setImageResource(R.drawable._11d)
         "13n" -> iv.setImageResource(R.drawable._13d)
         "50n" -> iv.setImageResource(R.drawable._50d)
-        else -> iv.setImageResource(R.drawable._load)
+        else -> iv.setImageResource(R.drawable.sunny)
     }
 }

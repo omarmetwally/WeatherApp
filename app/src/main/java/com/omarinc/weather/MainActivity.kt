@@ -52,7 +52,8 @@ class MainActivity : AppCompatActivity() {
             title = ""
         }
 
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string._0, R.string._0_0)
+        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.openDrawer, R.string.closeDrawer)
+        actionBarDrawerToggle.drawerArrowDrawable.color=getColor(R.color.white)
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 

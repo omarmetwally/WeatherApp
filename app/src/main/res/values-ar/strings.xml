@@ -18,6 +18,8 @@
     <string name="_0_m_s">0 م/ث</string>
     <string name="wind">الرياح</string>
     <string name="_0">0 %</string>
+    <string name="openDrawer">اضغط</string>
+    <string name="closeDrawer">إغلاق</string>
     <string name="sunset">غروب</string>
     <string name="_0_m">0 م</string>
     <string name="sunrise">شروق</string>
@@ -40,6 +42,7 @@
     <string name="address_not_found">لم يتم العثور على العنوان</string>
     <string name="Latitude">خط العرض: </string>
     <string name="Longitude">خط الطول: </string>
+    <string name="search">ابحث... </string>
     <string name="map">خريطة</string>
     <string name="location">الموقع</string>
     <string name="language">اللغة</string>

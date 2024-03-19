@@ -8,21 +8,19 @@
     tools:context=".MainActivity">
 
     <!-- Content Layout -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <RelativeLayout
         android:id="@+id/content_container"
-        android:orientation="vertical"
-        android:layout_marginTop="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="?attr/colorPrimary"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
             android:elevation="11dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <!-- NavHostFragment -->
         <fragment
@@ -32,7 +30,7 @@
             android:layout_height="match_parent"
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- NavigationView -->
     <com.google.android.material.navigation.NavigationView
@@ -40,6 +38,8 @@
         android:layout_gravity="start"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         app:menu="@menu/menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

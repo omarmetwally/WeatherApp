@@ -5,7 +5,7 @@
     <string name="_2_PM">2 PM</string>
     <string name="feels_like">Feels like</string>
 
-    <string name="cloudy_day">Cloudy Day</string>
+    <string name="cloudy_day">Overcast Clouds</string>
     <string name="wednesday">Wednesday</string>
     <string name="city">City</string>
     <string name="country">Country</string>
@@ -17,6 +17,8 @@
     <string name="_0_m_s">0 m/s</string>
     <string name="wind">Wind</string>
     <string name="_0">0 %</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
     <string name="sunset">Sunset</string>
     <string name="_0_m">0 m</string>
     <string name="sunrise">Sunrise</string>
@@ -39,6 +41,7 @@
     <string name="address_not_found">Address name not found</string>
     <string name="Latitude">Latitude: </string>
     <string name="Longitude">Longitude: </string>
+    <string name="search">Search.... </string>
 
 
     <string name="map">Map</string>

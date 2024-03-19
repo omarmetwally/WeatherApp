@@ -76,6 +76,8 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
         observeWeather()
+        setVisibility(false)
+
 
 
 //        if (checkPermissions()) {
@@ -123,15 +125,15 @@ class HomeFragment : Fragment() {
                     }
 
                     is ApiState.Success -> {
-                        setVisibility(false)
+
                         Log.i(TAG, "observeWeather: sus ${result.weatherResponse}")
                         viewModel.extractFiveDayForecast(result.weatherResponse.list)
                         viewModel.extractTodayForecast(result.weatherResponse.list)
-                        setVisibility(true)
+
                         setupRecyclerView()
                         detailsForecastUI(result.weatherResponse.list)
                         currentForecastUI(result.weatherResponse)
-
+                        setVisibility(true)
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.fiveDayForecast.value}")
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.todayForecast.value}")
 
@@ -229,6 +231,8 @@ class HomeFragment : Fragment() {
         binding.tvCurrentDegree.visibility=View.VISIBLE
         binding.tvWeatherStatus.visibility=View.VISIBLE
         binding.cvDetails.visibility=View.VISIBLE
+            binding.rvHours.visibility=View.VISIBLE
+            binding.rvDays.visibility=View.VISIBLE
         }
         else{
             binding.loadingLottie.visibility=View.VISIBLE
@@ -240,6 +244,8 @@ class HomeFragment : Fragment() {
             binding.tvCurrentDegree.visibility=View.GONE
             binding.tvWeatherStatus.visibility=View.GONE
             binding.cvDetails.visibility=View.GONE
+            binding.rvHours.visibility=View.GONE
+            binding.rvDays.visibility=View.GONE
 
         }
 
@@ -298,6 +304,7 @@ class HomeFragment : Fragment() {
 
 
         Log.i(TAG, "currentForecastUI: ${weather.city.coord.lat} "+weather.city.coord.lon)
+//        setVisibility(true)
     }
 
     fun detailsForecastUI(list: List<ForecastEntry>)
@@ -313,6 +320,8 @@ class HomeFragment : Fragment() {
         binding.tvDynamicHumidity.text = "${humidity}%"
         binding.tvDynamicWind.text = "${windSpeed} m/s"
         binding.tvDynamicCloud.text = "${cloudiness}%"
+
+
 
     }
 
