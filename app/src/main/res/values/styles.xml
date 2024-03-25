@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomAutocompleteTheme" parent="Theme.MaterialComponents.Light.Dialog">
+        <!-- Background color for the autocomplete fragment -->
+        <item name="colorSurface">@color/white</item>
+        <!-- Color of the text in the search bar -->
+        <item name="android:textColor">@color/black</item>
+        <!-- Color of the hint text in the search bar -->
+        <item name="android:textColorHint">@color/black</item>
+    </style>
+
+</resources>

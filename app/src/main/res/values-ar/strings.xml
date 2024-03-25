@@ -66,6 +66,9 @@
     <string name="today">اليوم</string>
     <string name="tomorrow">غدًا</string>
     <string name="percentage">%</string>
+
+    <string name="channel_name">اشعارات التنبيهات</string>
+    <string name="channel_description">اشعارات التنبيهات</string>
 </resources>
 
 

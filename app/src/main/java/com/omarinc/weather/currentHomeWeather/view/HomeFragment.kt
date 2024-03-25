@@ -39,7 +39,7 @@ import java.util.Locale
 
 class HomeFragment : Fragment() {
 
-    private  lateinit var binding: FragmentHomeBinding
+    private lateinit var binding: FragmentHomeBinding
     private val myDailyAdapter = MyDailyAdapter()
     private val myHourAdapter = MyHourAdapter()
     private lateinit var viewModel: HomeViewModel
@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    private  val TAG = "HomeFragment"
+    private val TAG = "HomeFragment"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,12 +72,12 @@ class HomeFragment : Fragment() {
             requireActivity()
         )
         viewModel = ViewModelProvider(requireActivity(), factory).get(HomeViewModel::class.java)
-        viewModelSettings = ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
+        viewModelSettings =
+            ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
 
         setupRecyclerView()
         observeWeather()
         setVisibility(false)
-
 
 
 //        if (checkPermissions()) {
@@ -97,25 +97,29 @@ class HomeFragment : Fragment() {
         }
 
 
-        lifecycleScope.launch{ viewModel.fiveDayForecast.collectLatest { forecastList ->
+        lifecycleScope.launch {
+            viewModel.fiveDayForecast.collectLatest { forecastList ->
 
-            Log.i(TAG, "fiveDayForecast: ")
+                Log.i(TAG, "fiveDayForecast: ")
 
-            binding.rvDays.visibility= View.VISIBLE
-            myDailyAdapter.submitList(forecastList)
-        } }
+                binding.rvDays.visibility = View.VISIBLE
+                myDailyAdapter.submitList(forecastList)
+            }
+        }
 
-        lifecycleScope.launch{ viewModel.todayForecast.collectLatest { forecastList ->
+        lifecycleScope.launch {
+            viewModel.todayForecast.collectLatest { forecastList ->
 
-            Log.i(TAG, "fiveDayForecast: ")
+                Log.i(TAG, "fiveDayForecast: ")
 
-            binding.rvHours.visibility= View.VISIBLE
-            myHourAdapter.submitList(forecastList)
-        } }
+                binding.rvHours.visibility = View.VISIBLE
+                myHourAdapter.submitList(forecastList)
+            }
+        }
 
     }
 
-    private fun observeWeather()  {
+    private fun observeWeather() {
         lifecycleScope.launch {
             viewModel.weather.collectLatest { result ->
                 when (result) {
@@ -148,9 +152,6 @@ class HomeFragment : Fragment() {
         }
 
 
-
-
-
     }
 
 
@@ -165,36 +166,45 @@ class HomeFragment : Fragment() {
             if (city != null) {
                 // Use the city argument as needed, for example:
                 Log.d(TAG, "City received: ${city.cityName}")
-                viewModel.getCurrentWeather(Coordinates(lat = city.latitude, lon = city.longitude),
+                viewModel.getCurrentWeather(
+                    Coordinates(lat = city.latitude, lon = city.longitude),
                     viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                )
 
-            }else {
-                viewModel.startLocationUpdates(viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
+            } else {
+                viewModel.startLocationUpdates(
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                )
 
             }
         } else {
             requestLocationPermissions()
         }
     }
+
     private fun requestLocationPermissions() {
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ), Constants.LocationPermissionID)
+        ActivityCompat.requestPermissions(
+            requireActivity(), arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ), Constants.LocationPermissionID
+        )
     }
 
     private fun checkPermissions(): Boolean {
         var result = false
-        if ((ContextCompat.checkSelfPermission(requireContext(),
+        if ((ContextCompat.checkSelfPermission(
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED)
             ||
-            (ContextCompat.checkSelfPermission(requireContext(),
+            (ContextCompat.checkSelfPermission(
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED))
-        {
+            ) == PackageManager.PERMISSION_GRANTED)
+        ) {
             result = true
         }
         return result
@@ -209,78 +219,57 @@ class HomeFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == Constants.LocationPermissionID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                viewModel.startLocationUpdates(viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT))
+                viewModel.startLocationUpdates(
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                )
             }
         }
     }
 
 
+    fun setVisibility(visibility: Boolean) {
 
-    fun setVisibility(visibility: Boolean)
-    {
+        if (visibility) {
+            binding.loadingLottie.visibility = View.GONE
+            binding.ivLocation.visibility = View.VISIBLE
+            binding.tvLocationName.visibility = View.VISIBLE
+            binding.tvDate.visibility = View.VISIBLE
+            binding.ivWeather.visibility = View.VISIBLE
 
-        if(visibility)
-        {
-        binding.loadingLottie.visibility=View.GONE
-        binding.ivLocation.visibility=View.VISIBLE
-        binding.tvLocationName.visibility=View.VISIBLE
-        binding.tvDate.visibility=View.VISIBLE
-        binding.ivWeather.visibility=View.VISIBLE
+            binding.tvCurrentDegree.visibility = View.VISIBLE
+            binding.tvWeatherStatus.visibility = View.VISIBLE
+            binding.cvDetails.visibility = View.VISIBLE
+            binding.rvHours.visibility = View.VISIBLE
+            binding.rvDays.visibility = View.VISIBLE
+        } else {
+            binding.loadingLottie.visibility = View.VISIBLE
+            binding.ivLocation.visibility = View.GONE
+            binding.tvLocationName.visibility = View.GONE
+            binding.tvDate.visibility = View.GONE
+            binding.ivWeather.visibility = View.GONE
 
-        binding.tvCurrentDegree.visibility=View.VISIBLE
-        binding.tvWeatherStatus.visibility=View.VISIBLE
-        binding.cvDetails.visibility=View.VISIBLE
-            binding.rvHours.visibility=View.VISIBLE
-            binding.rvDays.visibility=View.VISIBLE
-        }
-        else{
-            binding.loadingLottie.visibility=View.VISIBLE
-            binding.ivLocation.visibility=View.GONE
-            binding.tvLocationName.visibility=View.GONE
-            binding.tvDate.visibility=View.GONE
-            binding.ivWeather.visibility=View.GONE
-
-            binding.tvCurrentDegree.visibility=View.GONE
-            binding.tvWeatherStatus.visibility=View.GONE
-            binding.cvDetails.visibility=View.GONE
-            binding.rvHours.visibility=View.GONE
-            binding.rvDays.visibility=View.GONE
+            binding.tvCurrentDegree.visibility = View.GONE
+            binding.tvWeatherStatus.visibility = View.GONE
+            binding.cvDetails.visibility = View.GONE
+            binding.rvHours.visibility = View.GONE
+            binding.rvDays.visibility = View.GONE
 
         }
-
-
 
 
     }
 
-    fun currentForecastUI(weather: WeatherResponse)
-    {
+    fun currentForecastUI(weather: WeatherResponse) {
         val currentDate = SimpleDateFormat("EEE, d MMM -yy", Locale.getDefault()).format(Date())
         var coordinates: Coordinates = viewModel.getCityName()
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
 
 
-//        lifecycleScope.launch {
-//            viewModel.todayForecast.collect {
-//                setIcon(it.get(1).icon,binding.ivWeather)
-//
-//                binding.tvCurrentDegree.text="${it.get(1).temp.toInt()}°${getString(R.string.c)}"
-//                binding.tvWeatherStatus.text="${it.get(1).condition}\n ${it.get(1).temp.toInt()}°${getString(R.string.c)}"
-//
-//            }
-//        }
 
-
-
-        binding.tvLocationName.text= "${weather.city.name} ,${weather.city.country}"
-        binding.tvDate.text="$currentDate"
+        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
+        binding.tvDate.text = "$currentDate"
         Log.i(TAG, "currentForecastUI: ${viewModel.todayForecast.value}")
-
-//        setIcon(viewModel.todayForecast.value.get(0).icon,binding.ivWeather)
-//
-//        binding.tvCurrentDegree.text="${viewModel.todayForecast.value.get(0).temp.toInt()}°${getString(R.string.c)}"
-//        binding.tvWeatherStatus.text="${viewModel.todayForecast.value.get(0).condition}"
 
 
 
@@ -290,7 +279,6 @@ class HomeFragment : Fragment() {
             binding.tvCurrentDegree.text = "${firstForecast.temp}°${getString(R.string.c)}"
             binding.tvWeatherStatus.text = firstForecast.condition
         } else {
-            // Handle the case where there are no forecasts available
             Log.d(TAG, "No forecasts available")
         }
 
@@ -298,17 +286,16 @@ class HomeFragment : Fragment() {
 
         val time = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
-        binding.tvDynamicSunrise.text="${time.format(date)}"
-        date= Date(weather.city.sunset * 1000)
-        binding.tvDynamicSunset.text="${time.format(date)}"
+        binding.tvDynamicSunrise.text = "${time.format(date)}"
+        date = Date(weather.city.sunset * 1000)
+        binding.tvDynamicSunset.text = "${time.format(date)}"
 
 
-        Log.i(TAG, "currentForecastUI: ${weather.city.coord.lat} "+weather.city.coord.lon)
-//        setVisibility(true)
+        Log.i(TAG, "currentForecastUI: ${weather.city.coord.lat} " + weather.city.coord.lon)
+
     }
 
-    fun detailsForecastUI(list: List<ForecastEntry>)
-    {
+    fun detailsForecastUI(list: List<ForecastEntry>) {
         val numberFormat = NumberFormat.getNumberInstance(Locale.getDefault())
 
         val pressure = numberFormat.format(list[0].main.pressure)
@@ -320,7 +307,6 @@ class HomeFragment : Fragment() {
         binding.tvDynamicHumidity.text = "${humidity}%"
         binding.tvDynamicWind.text = "${windSpeed} m/s"
         binding.tvDynamicCloud.text = "${cloudiness}%"
-
 
 
     }

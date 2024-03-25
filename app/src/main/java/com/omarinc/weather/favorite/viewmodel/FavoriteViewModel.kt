@@ -21,8 +21,8 @@ class FavoriteViewModel  (private val _repo: WeatherRepository, val context: Con
 //        private var _favorite:MutableLiveData<List<FavoriteCity>> = MutableLiveData<List<FavoriteCity>>()
 //        val favorite:Liva
 
-        private  var _favorite=MutableStateFlow<DataBaseState>(DataBaseState.Loading)
-        val favorite:StateFlow<DataBaseState> = _favorite
+        private  var _favorite=MutableStateFlow<DataBaseState<FavoriteCity>>(DataBaseState.Loading)
+        val favorite:StateFlow<DataBaseState<FavoriteCity>> = _favorite
 
 
         fun insertFavorite(city:FavoriteCity)

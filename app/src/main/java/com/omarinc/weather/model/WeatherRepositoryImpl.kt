@@ -69,4 +69,14 @@ class WeatherRepositoryImpl(
     }
 
 
+    override suspend fun insertAlert(alert: WeatherAlert) {
+        weatherLocalDataSource.insertAlert(alert)
+    }
+
+    override fun getAllAlerts(): Flow<List<WeatherAlert>> {
+        return weatherLocalDataSource.getAllAlerts()
+    }
+
+
+
 }

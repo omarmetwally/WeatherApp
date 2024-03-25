@@ -21,6 +21,8 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.omarinc.weather.R
+import com.omarinc.weather.currentHomeWeather.view.HomeFragmentArgs
+import com.omarinc.weather.utilities.Constants
 import java.io.IOException
 import java.util.Locale
 
@@ -31,6 +33,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     private lateinit var autoCompleteTextView: AutoCompleteTextView
 
+    private  var fragmentType:String?=""
+    private  var timeStamp:Long?=0
 
 
     private  val TAG = "MapFragment"
@@ -50,6 +54,10 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+         fragmentType = arguments?.let { MapFragmentArgs.fromBundle(it).fragmentType }
+         timeStamp = arguments?.let { MapFragmentArgs.fromBundle(it).timeStamp }
+
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -73,8 +81,17 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                     googleMap.addMarker(MarkerOptions().position(place.latLng).title(place.name))
 
 
-                    val locationBottomSheetFragment = LocationBottomSheetFragment(place.name,place.latLng.latitude, place.latLng.longitude)
-                    locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+                    if(fragmentType==Constants.FRAGMENT_TYPE)
+                    {
+
+                        val locationBottomSheetFragment = LocationBottomSheetFragment(place.name,place.latLng.latitude, place.latLng.longitude,fragmentType=Constants.FRAGMENT_TYPE,timeStamp=timeStamp!!)
+                        locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+
+                    }else{
+
+                        val locationBottomSheetFragment = LocationBottomSheetFragment(place.name,place.latLng.latitude, place.latLng.longitude)
+                        locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+                    }
                 }
             }
 
@@ -103,8 +120,17 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                 addressText = "Unable to get address"
             }
 
-            val locationBottomSheetFragment = LocationBottomSheetFragment(addressText,latLng.latitude, latLng.longitude)
-            locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+            if(fragmentType==Constants.FRAGMENT_TYPE)
+            {
+
+                val locationBottomSheetFragment = LocationBottomSheetFragment(addressText,latLng.latitude, latLng.longitude,fragmentType=Constants.FRAGMENT_TYPE,timeStamp=timeStamp!!)
+                locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+
+            }else{
+
+                val locationBottomSheetFragment = LocationBottomSheetFragment(addressText,latLng.latitude, latLng.longitude)
+                locationBottomSheetFragment.show(parentFragmentManager, LocationBottomSheetFragment.TAG)
+            }
         }
     }
 }

@@ -102,7 +102,7 @@ class favoriteFragment : Fragment() {
                     } is DataBaseState.Success->
                     {
                         Log.i(TAG, "setupRecyclerView: Succ")
-                        myFavoriteAdapter.submitList(result.favoriteCity)
+                        myFavoriteAdapter.submitList(result.data)
                     }
                     is DataBaseState.Failure->
                     {

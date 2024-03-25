@@ -19,5 +19,10 @@ interface WeatherRepository {
     fun readStringFromSharedPreferences(key: String): String
 
 
+     suspend fun insertAlert(alert: WeatherAlert)
+     fun getAllAlerts(): Flow<List<WeatherAlert>>
+
+
+
 
 }

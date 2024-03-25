@@ -2,6 +2,7 @@ package com.omarinc.weather.db
 
 import android.content.Context
 import com.omarinc.weather.model.FavoriteCity
+import com.omarinc.weather.model.WeatherAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.withContext
 
 class WeatherLocalDataSourceImpl private constructor(context: Context):WeatherLocalDataSource{
     private val favoriteDao:FavouriteDao=WeatherDB.getInstance(context).getDao()
+    private val alertDao:WeatherAlertDao=WeatherDB.getInstance(context).getAlertDao()
     private  val TAG = "WeatherLocalDataSourceI"
 
 
@@ -40,6 +42,14 @@ class WeatherLocalDataSourceImpl private constructor(context: Context):WeatherLo
         val favorites = favoriteDao.getAllFavouriteCites()
         favorites
     }
+
+    override suspend fun insertAlert(alert: WeatherAlert) {
+        CoroutineScope(Dispatchers.IO).launch {
+            alertDao.insertAlert(alert)
+        }
+    }
+
+    override fun getAllAlerts(): Flow<List<WeatherAlert>> = alertDao.getAllAlerts()
 
 
 }

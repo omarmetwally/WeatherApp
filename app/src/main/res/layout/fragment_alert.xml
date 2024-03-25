@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:layout_marginLeft="16dp"
+android:layout_marginTop="45dp"
+android:layout_marginRight="16dp"
+tools:context=".alert.view.AlertFragment">
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/rvAlerts"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:listitem="@layout/item_alert" />
+
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fab_add_alert"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="40dp"
+    android:layout_marginBottom="67dp"
+    android:background="@color/card_background"
+
+    android:clickable="true"
+    android:src="@drawable/ic_alert_add"
+    app:backgroundTint="@color/card_background"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:maxImageSize="30dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

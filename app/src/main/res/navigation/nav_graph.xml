@@ -34,10 +34,29 @@
         android:id="@+id/mapFragment"
         android:name="com.omarinc.weather.map.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <argument
+            android:name="fragmentType"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="favorite" />
+        <argument
+            android:name="timeStamp"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.omarinc.weather.settings.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/alertFragment"
+        android:name="com.omarinc.weather.alert.view.AlertFragment"
+        android:label="fragment_alert"
+        tools:layout="@layout/fragment_alert" >
+        <action
+            android:id="@+id/action_alertFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
 </navigation>

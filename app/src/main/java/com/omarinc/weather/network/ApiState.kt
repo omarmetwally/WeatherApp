@@ -9,9 +9,9 @@ sealed class ApiState {
     object Loading :ApiState()
 
 }
-sealed class DataBaseState {
-    class Success(val favoriteCity: List<FavoriteCity>):DataBaseState()
-    class Failure(val msg:Throwable):DataBaseState()
-    object Loading :DataBaseState()
+sealed class DataBaseState <out T> {
+    class Success<out T>(val data: List<T>): DataBaseState<T>()
+    class Failure(val msg: Throwable): DataBaseState<Nothing>()
+    object Loading : DataBaseState<Nothing>()
 
 }

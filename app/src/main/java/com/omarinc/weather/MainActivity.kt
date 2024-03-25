@@ -95,9 +95,9 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 } R.id.alertFragment -> {
-//                    val options = getNavOptions()
-//                    navController.navigate(R.id.alertFragment, null, options)
-//                drawerLayout.closeDrawer(GravityCompat.START)
+                    val options = getNavOptions()
+                    navController.navigate(R.id.alertFragment, null, options)
+                drawerLayout.closeDrawer(GravityCompat.START)
                     false
                 }
                 R.id.settingFragment -> {
