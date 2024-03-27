@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import com.omarinc.weather.model.WeatherResponse
+import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import java.util.Locale
 
 object Helpers {
@@ -68,5 +69,16 @@ object Helpers {
             Log.e(TAG, "setLocationNameByGeoCoder: ", )
         }
         return ""
+    }
+
+
+    fun updateLocale(context: Context): Context {
+        val prefs = SharedPreferencesImpl.getInstance(context)
+        val lang = prefs.readStringFromSharedPreferences(Constants.KEY_LANGUAGE) ?: Locale.getDefault().language
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        return context.createConfigurationContext(config)
     }
 }

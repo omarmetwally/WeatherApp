@@ -1,15 +1,12 @@
-package com.omarinc.weather.alert.workmanger
+package com.omarinc.weather.alert.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.omarinc.weather.R
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
@@ -18,9 +15,11 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import com.omarinc.weather.utilities.Helpers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class WeatherNotificationWorker(
     context: Context,
@@ -55,31 +54,52 @@ class WeatherNotificationWorker(
         return Result.success()
     }*/
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+
+
+//        val contextWithCorrectLocale = Helpers.updateLocale(applicationContext)
+        val prefs = SharedPreferencesImpl.getInstance(applicationContext)
+        val lang = prefs.readStringFromSharedPreferences(Constants.KEY_LANGUAGE)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        val config = applicationContext.resources.configuration
+        config.setLocale(locale)
+
+        val contextWithCorrectLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            applicationContext.createConfigurationContext(config)
+        } else {
+            applicationContext
+        }
+
+
         val repository = WeatherRepositoryImpl.getInstance(
-            WeatherRemoteDataSourceImpl.getInstance(applicationContext),
-            WeatherLocalDataSourceImpl.getInstance(applicationContext),
-            SharedPreferencesImpl.getInstance(applicationContext)
+            WeatherRemoteDataSourceImpl.getInstance(contextWithCorrectLocale),
+            WeatherLocalDataSourceImpl.getInstance(contextWithCorrectLocale),
+            SharedPreferencesImpl.getInstance(contextWithCorrectLocale)
         )
+
+
 
         val latitude = inputData.getDouble(Constants.LATITUDE_KEY, 0.0)
         val longitude = inputData.getDouble(Constants.LONGITUDE_KEY, 0.0)
         val location = inputData.getString(Constants.LOCATION_NAME_KEY)
         try {
-            val response = repository.getWeatherResponse(Coordinates(latitude,longitude), "en", "metric").first()
+            val response = repository.getWeatherResponse(Coordinates(latitude,longitude),
+                SharedPreferencesImpl.getInstance(context = contextWithCorrectLocale).readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                "metric").first()
             if (response.isSuccessful) {
                 response.body()?.let { weatherResponse ->
-                    val weatherCondition = weatherResponse.list.first().weather.first().main
+                    val weatherCondition = weatherResponse.list.first().weather.first().description
 
                     Log.i(TAG, "doWork: $weatherCondition")
                     Log.i(TAG, "doWork: ${weatherResponse.city.name}")
 
-//                    setupNotificationChannel()
+                    val notificationManager = contextWithCorrectLocale.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-                    val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-                    val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                        .setContentTitle("Weather Alert")
-                        .setContentText("Weather Condition in ${location}: $weatherCondition")
+                    val notification = NotificationCompat.Builder(contextWithCorrectLocale, CHANNEL_ID)
+                        .setContentTitle(contextWithCorrectLocale.getString(R.string.weather_alert))
+                        .setContentText("${contextWithCorrectLocale.getString(R.string.weather_Condition)} " +
+                                "${location}: " +
+                                "$weatherCondition")
                         .setSmallIcon(R.drawable.ic_alert_notification)
                         .build()
 

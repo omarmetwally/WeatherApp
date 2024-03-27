@@ -69,6 +69,10 @@
 
     <string name="channel_name">اشعارات التنبيهات</string>
     <string name="channel_description">اشعارات التنبيهات</string>
+    <string name="weather_alert">تنبيه الطقس</string>
+    <string name="weather_Condition">حالة الطقس في </string>
+    <string name="Dismiss_Button">اغلاق</string>
+
 </resources>
 
 

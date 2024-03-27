@@ -3,9 +3,11 @@ package com.omarinc.weather.currentHomeWeather.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.omarinc.weather.R
 import com.omarinc.weather.databinding.ItemHoursBinding
 import com.omarinc.weather.model.TodayForecast
 
@@ -19,6 +21,10 @@ class MyHourAdapter : ListAdapter<TodayForecast, MyHourAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        val animation =
+            AnimationUtils.loadAnimation(holder.itemView.context, R.anim.scale_in_animation)
+        holder.itemView.startAnimation(animation)
         val currentForecast = getItem(position)
 
         with(holder.binding) {

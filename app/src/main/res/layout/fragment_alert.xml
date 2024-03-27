@@ -16,22 +16,58 @@ tools:context=".alert.view.AlertFragment">
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="1.0"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0"
     tools:listitem="@layout/item_alert" />
 
-<com.google.android.material.floatingactionbutton.FloatingActionButton
-    android:id="@+id/fab_add_alert"
+<LinearLayout
+    android:id="@+id/linearLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="40dp"
-    android:layout_marginBottom="67dp"
-    android:background="@color/card_background"
 
-    android:clickable="true"
-    android:src="@drawable/ic_alert_add"
-    app:backgroundTint="@color/card_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:maxImageSize="30dp" />
+    app:layout_constraintEnd_toEndOf="@+id/rvAlerts"
+    app:layout_constraintTop_toTopOf="@+id/rvAlerts"
+    app:layout_constraintVertical_bias="0.883">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading_lottie"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/arrows"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@color/card_background"
+
+        android:clickable="true"
+        android:src="@drawable/ic_alert_add"
+        app:backgroundTint="@color/card_background"
+        app:maxImageSize="30dp" />
+</LinearLayout>
+
+<ImageView
+    android:id="@+id/iv_no_location"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:layout_marginTop="61dp"
+    android:src="@drawable/no_alert"
+    app:layout_constraintStart_toStartOf="@+id/rvAlerts"
+    app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,6 +73,9 @@
 
     <string name="channel_name">Alert Service</string>
     <string name="channel_description">Notification Channel for Alert Service</string>
+    <string name="weather_alert">Weather Alert</string>
+    <string name="weather_Condition">Weather Condition in</string>
+    <string name="Dismiss_Button">Dismiss</string>
 
 
 </resources>

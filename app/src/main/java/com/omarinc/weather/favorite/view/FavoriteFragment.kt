@@ -21,6 +21,7 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.security.auth.login.LoginException
 
@@ -74,6 +75,7 @@ class favoriteFragment : Fragment() {
     private fun setupRecyclerView()
     {
 
+
         myFavoriteAdapter= FavoriteAdapter(
             onDeleteClick = { city ->
                 viewModel.deleteFavorite(city)
@@ -92,7 +94,7 @@ class favoriteFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            viewModel.favorite.collect{ result->
+            viewModel.favorite.collectLatest{ result->
                 when(result)
                 {
                     is DataBaseState.Loading->
@@ -102,7 +104,15 @@ class favoriteFragment : Fragment() {
                     } is DataBaseState.Success->
                     {
                         Log.i(TAG, "setupRecyclerView: Succ")
+                        if (result.data.isEmpty()) {
+                            binding.ivNoLocation.visibility = View.VISIBLE
+                            binding.loadingLottie.visibility = View.VISIBLE
+                        } else {
+                            binding.ivNoLocation.visibility = View.GONE
+                            binding.loadingLottie.visibility = View.INVISIBLE
+                        }
                         myFavoriteAdapter.submitList(result.data)
+
                     }
                     is DataBaseState.Failure->
                     {
@@ -112,6 +122,8 @@ class favoriteFragment : Fragment() {
             }
         }
     }
+
+
 
 
 }

@@ -6,9 +6,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,13 +19,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.omarinc.weather.R
-import com.omarinc.weather.alert.workmanger.WeatherNotificationWorker
+import com.omarinc.weather.alert.viewmodel.AlertViewModel
+import com.omarinc.weather.alert.services.WeatherNotificationWorker
+import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentAlertBinding
-import com.omarinc.weather.databinding.FragmentFavoriteBinding
+import com.omarinc.weather.db.WeatherLocalDataSourceImpl
+import com.omarinc.weather.model.WeatherRepositoryImpl
+import com.omarinc.weather.network.DataBaseState
+import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
@@ -30,6 +42,8 @@ class AlertFragment : Fragment() {
 
 
     private  lateinit var binding: FragmentAlertBinding
+    private val myAlertAdapter = AlertAdapter()
+    private lateinit var viewModel: AlertViewModel
     private  val TAG = "AlertFragment"
 
     override fun onCreateView(
@@ -43,6 +57,18 @@ class AlertFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val factory = ViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                WeatherRemoteDataSourceImpl.getInstance(requireContext()),
+                WeatherLocalDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext())
+            ),
+            requireActivity()
+        )
+        viewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
+        viewModel.getAllAlerts()
+
+        setupRecyclerView()
 
         binding.fabAddAlert.setOnClickListener{
 
@@ -53,7 +79,45 @@ class AlertFragment : Fragment() {
 
     }
 
+    private fun setupRecyclerView() {
+        binding.rvAlerts.apply {
+            adapter=myAlertAdapter
+        }
 
+       lifecycleScope.launch {
+           viewModel.alert.collectLatest { result->
+               when(result)
+               {
+                   is DataBaseState.Loading->
+                   {
+                       /// loading
+                       Log.i(TAG, "setupRecyclerView: load")
+                   }
+                   is DataBaseState.Success->
+                   {
+                       Log.i(TAG, "setupRecyclerView: Succ")
+
+                       if (result.data.isEmpty()) {
+                           binding.ivNoLocation.visibility = View.VISIBLE
+                           binding.loadingLottie.visibility = View.VISIBLE
+                       } else {
+                           binding.ivNoLocation.visibility = View.GONE
+                           binding.loadingLottie.visibility = View.INVISIBLE
+                       }
+                       myAlertAdapter.submitList(result.data)
+                   }
+                   is DataBaseState.Failure->
+                   {
+                       Log.i(TAG, "setupRecyclerView Failure ")
+
+                   }
+               }
+
+           }
+       }
+
+
+    }
 
 
     fun showDateTimePicker() {
@@ -96,5 +160,12 @@ class AlertFragment : Fragment() {
             }
 
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:com.omarinc.weather"))
+            startActivityForResult(intent, 101)
+        }
+
     }
 }

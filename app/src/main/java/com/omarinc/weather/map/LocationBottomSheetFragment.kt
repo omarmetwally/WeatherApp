@@ -1,5 +1,10 @@
 package com.omarinc.weather.map
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,10 +18,9 @@ import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.omarinc.weather.R
 import com.omarinc.weather.alert.viewmodel.AlertViewModel
-import com.omarinc.weather.alert.workmanger.WeatherNotificationWorker
-import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
+import com.omarinc.weather.alert.services.AlarmReceiver
+import com.omarinc.weather.alert.services.WeatherNotificationWorker
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
-import com.omarinc.weather.databinding.FragmentFavoriteBinding
 import com.omarinc.weather.databinding.FragmentLocationBottomSheetBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
 import com.omarinc.weather.favorite.viewmodel.FavoriteViewModel
@@ -64,8 +68,10 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
         if (fragmentType==Constants.FRAGMENT_TYPE)
         {
             alertViewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
-            registerNotification();
+
             binding.btnSaveLocation.setOnClickListener {
+                registerNotification();
+                registerAlarm();
                 alertViewModel.insertAlert(WeatherAlert(locationName = location, latitude = lat, longitude = lng, alertTime = timeStamp))
                 findNavController().navigateUp()
                 dismiss()
@@ -87,6 +93,33 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
 
 
     }
+
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun registerAlarm() {
+        val alertTimeMillis = timeStamp
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(Constants.LATITUDE_KEY, lat)
+            putExtra(Constants.LONGITUDE_KEY, lng)
+            putExtra(Constants.LOCATION_NAME_KEY, location)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            alertTimeMillis,
+            pendingIntent
+        )
+    }
+
 
     private fun registerNotification() {
         val alertDelay = timeStamp - System.currentTimeMillis()
