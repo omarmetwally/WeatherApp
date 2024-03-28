@@ -23,6 +23,11 @@ interface WeatherRepository {
      fun getAllAlerts(): Flow<List<WeatherAlert>>
 
 
+    suspend fun insertCashedData(weatherResponse: WeatherResponse)
+
+    suspend fun deleteCashedData()
+
+    fun getCashedData(): Flow<WeatherResponse>
 
 
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.view.MyHourAdapter
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
@@ -21,6 +22,7 @@ import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.weather.utilities.Helpers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.security.auth.login.LoginException
@@ -63,8 +65,13 @@ class favoriteFragment : Fragment() {
 
         binding.fabAddFav.setOnClickListener {
 
-            val action=favoriteFragmentDirections.actionFavoriteFragmentToMapFragment()
-            findNavController().navigate(action)
+            if (Helpers.isNetworkConnected(requireContext())) {
+                val action = favoriteFragmentDirections.actionFavoriteFragmentToMapFragment()
+                findNavController().navigate(action)
+            } else{
+                Snackbar.make(binding.root,"${getString(R.string.no_network)}", Snackbar.LENGTH_SHORT).show()
+            }
+
         }
 
         viewModel.getAllFavorites()
@@ -118,6 +125,8 @@ class favoriteFragment : Fragment() {
                     {
                         Log.i(TAG, "setupRecyclerView Failure ")
                     }
+
+                    else -> {}
                 }
             }
         }

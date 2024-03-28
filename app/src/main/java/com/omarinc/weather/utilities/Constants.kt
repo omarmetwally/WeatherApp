@@ -12,6 +12,7 @@ object Constants{
     const val KEY_TEMPERATURE_UNIT = "temperature_unit"
     const val KEY_WIND_SPEED_UNIT = "wind_speed_unit"
     const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
+    const val KEY_Ciy_Name = "city_name"
 
     const val VALUE_GPS = "gps"
     const val VALUE_MAP = "map"

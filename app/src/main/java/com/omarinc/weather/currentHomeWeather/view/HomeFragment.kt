@@ -13,15 +13,18 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentHomeBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
 import com.omarinc.weather.model.Coordinates
+import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.ForecastEntry
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.network.ApiState
+import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
@@ -41,6 +44,7 @@ class HomeFragment : Fragment() {
     private val myHourAdapter = MyHourAdapter()
     private lateinit var viewModel: HomeViewModel
     private lateinit var viewModelSettings: SettingViewModel
+    private var flag: Boolean = false
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -127,6 +131,7 @@ class HomeFragment : Fragment() {
 
                     is ApiState.Success -> {
 
+
                         Log.i(TAG, "observeWeather: sus ${result.weatherResponse}")
                         viewModel.extractFiveDayForecast(result.weatherResponse.list)
                         viewModel.extractTodayForecast(result.weatherResponse.list)
@@ -137,6 +142,11 @@ class HomeFragment : Fragment() {
                         setVisibility(true)
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.fiveDayForecast.value}")
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.todayForecast.value}")
+                        if (flag) {
+                            Log.i(TAG, "flag: gwaaaa $flag")
+                            viewModel.deleteCashedData()
+                            viewModel.insertCashedData(result.weatherResponse)
+                        }
 
                     }
 
@@ -157,25 +167,68 @@ class HomeFragment : Fragment() {
         val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
 
         if (checkPermissions()) {
+            if (Helpers.isNetworkConnected(requireContext())) {
+                if (city != null) {
+                    flag = false
+                    Log.d(TAG, "City received: ${city.cityName}")
+                    viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
+                    viewModel.getCurrentWeather(
+                        Coordinates(lat = city.latitude, lon = city.longitude),
+                        viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                        "metric"
+                    )
 
-            if (city != null) {
-                Log.d(TAG, "City received: ${city.cityName}")
-                viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
-                viewModel.getCurrentWeather(
-                    Coordinates(lat = city.latitude, lon = city.longitude),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    "metric"
-                )
+                } else {
+                    flag = true
+                    viewModel.startLocationUpdates(
+                        viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                        "metric"
+                    )
 
+                }
             } else {
-                viewModel.startLocationUpdates(
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    "metric"
-                )
 
+                loadWeatherFromDB()
             }
+
+
         } else {
             requestLocationPermissions()
+        }
+    }
+
+    private fun loadWeatherFromDB() {
+        viewModel.getCashedData()
+
+        lifecycleScope.launch {
+            viewModel.weatherDB.collectLatest { result ->
+                when (result) {
+                    is DataBaseState.Loading -> {
+                        /// loading
+                        Log.i(TAG, "setupRecyclerView: load")
+                        setVisibility(false)
+                    }
+
+                    is DataBaseState.SuccessObj -> {
+                        Log.i(TAG, "setupRecyclerView: Succ")
+                        viewModel.extractFiveDayForecast(result.weatherResponse.list)
+                        viewModel.extractTodayForecast(result.weatherResponse.list)
+
+                        setupRecyclerView()
+                        detailsForecastUI(result.weatherResponse.list)
+                        currentForecastUI(result.weatherResponse)
+                        setVisibility(true)
+
+                    }
+
+                    is DataBaseState.Failure -> {
+                        Log.i(TAG, "setupRecyclerView Failure ")
+                    }
+
+                    else -> {}
+                }
+
+            }
         }
     }
 
@@ -261,15 +314,27 @@ class HomeFragment : Fragment() {
         var coordinates: Coordinates = viewModel.getCoordinates()
 
 
-        if(city!=null)
-        {
-            binding.tvLocationName.text = "${city.cityName}"
 
+        if (Helpers.isNetworkConnected(requireContext())){
+
+            if (city != null) {
+                binding.tvLocationName.text = "${city.cityName}"
+
+            } else {
+                binding.tvLocationName.text =
+                    "${Helpers.setLocationNameByGeoCoder(coordinates, requireContext())}"
+
+                viewModel.writeCityToSharedPreferences(Constants.KEY_Ciy_Name,binding.tvLocationName.text.toString())
+            }
         }
         else{
-            binding.tvLocationName.text = "${Helpers.setLocationNameByGeoCoder(coordinates,requireContext())}"
+            binding.tvLocationName.text =
+                "${viewModel.readCityFromSharedPreferences(Constants.KEY_Ciy_Name)}"
 
         }
+
+
+
 
 
 //        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
@@ -305,19 +370,17 @@ class HomeFragment : Fragment() {
         var windSpeed = numberFormat.format(list[0].wind.speed)
         val cloudiness = numberFormat.format(list[0].clouds.all)
 
-        binding.tvDynamicPressure.text = "${pressure} mb"
+        binding.tvDynamicPressure.text = "${pressure} ${getString(R.string.hpa)}"
         binding.tvDynamicHumidity.text = "${humidity}%"
         binding.tvDynamicCloud.text = "${cloudiness}%"
-        if(SharedPreferencesImpl.getInstance(requireContext()).readStringFromSharedPreferences(Constants.KEY_WIND_SPEED_UNIT)==Constants.VALUE_MILE_HOUR)
-        {
+        if (SharedPreferencesImpl.getInstance(requireContext())
+                .readStringFromSharedPreferences(Constants.KEY_WIND_SPEED_UNIT) == Constants.VALUE_MILE_HOUR
+        ) {
             windSpeed = numberFormat.format(Helpers.meterPerSecondToMilePerHour(list[0].wind.speed))
-            binding.tvDynamicWind.text = "${windSpeed} mile/h"
+            binding.tvDynamicWind.text = "${windSpeed} ${getString(R.string.mile_per_hour)}"
+        } else {
+            binding.tvDynamicWind.text = "${windSpeed} ${getString(R.string.meter_per_sec)}"
         }
-        else{
-            binding.tvDynamicWind.text = "${windSpeed} meter/s"
-        }
-
-
 
 
     }

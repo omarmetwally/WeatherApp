@@ -11,6 +11,7 @@ sealed class ApiState {
 }
 sealed class DataBaseState <out T> {
     class Success<out T>(val data: List<T>): DataBaseState<T>()
+    class SuccessObj<out T>(val weatherResponse: WeatherResponse): DataBaseState<T>()
     class Failure(val msg: Throwable): DataBaseState<Nothing>()
     object Loading : DataBaseState<Nothing>()
 

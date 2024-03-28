@@ -77,6 +77,23 @@ class WeatherRepositoryImpl(
         return weatherLocalDataSource.getAllAlerts()
     }
 
+    override suspend fun insertCashedData(weatherResponse: WeatherResponse) {
+        withContext(Dispatchers.IO)
+        {
+            weatherLocalDataSource.insertCashedData(weatherResponse)
+        }
+    }
+
+    override suspend fun deleteCashedData() {
+        withContext(Dispatchers.IO)
+        {
+            weatherLocalDataSource.deleteCashedData()
+        }
+    }
+
+    override fun getCashedData(): Flow<WeatherResponse> {
+        return weatherLocalDataSource.getCashedData()
+    }
 
 
 }

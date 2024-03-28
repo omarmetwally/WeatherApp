@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.omarinc.weather.R
 import com.omarinc.weather.alert.viewmodel.AlertViewModel
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
@@ -33,8 +34,10 @@ import com.omarinc.weather.db.WeatherLocalDataSourceImpl
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import com.omarinc.weather.utilities.Helpers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -46,6 +49,7 @@ class AlertFragment : Fragment() {
     private  lateinit var binding: FragmentAlertBinding
     private val myAlertAdapter = AlertAdapter()
     private lateinit var viewModel: AlertViewModel
+    private lateinit var settingsViewModel: SettingViewModel
     private  val TAG = "AlertFragment"
 
     override fun onCreateView(
@@ -68,15 +72,23 @@ class AlertFragment : Fragment() {
             requireActivity()
         )
         viewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
+        settingsViewModel = ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
         viewModel.getAllAlerts()
 
         setupRecyclerView()
 
         binding.fabAddAlert.setOnClickListener{
 
-            setupNotificationChannel()
-            showDateTimePicker()
 
+
+
+            if(Helpers.isNetworkConnected(requireContext())){
+                setupNotificationChannel()
+                showDateTimePicker()
+            }
+            else{
+            Snackbar.make(binding.root,"${getString(R.string.no_network)}", Snackbar.LENGTH_SHORT).show()
+        }
         }
 
     }
@@ -113,6 +125,8 @@ class AlertFragment : Fragment() {
                        Log.i(TAG, "setupRecyclerView Failure ")
 
                    }
+
+                   else -> {}
                }
 
            }
@@ -168,6 +182,8 @@ class AlertFragment : Fragment() {
                 Uri.parse("package:com.omarinc.weather"))
             startActivityForResult(intent, 101)
         }
+
+        settingsViewModel.writeStringToSharedPreferences(Constants.KEY_NOTIFICATIONS_ENABLED,Constants.VALUE_ENABLE)
 
     }
 

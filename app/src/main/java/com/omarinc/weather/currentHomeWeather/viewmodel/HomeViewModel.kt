@@ -17,7 +17,9 @@ import com.omarinc.weather.model.DailyForecast
 import com.omarinc.weather.model.ForecastEntry
 import com.omarinc.weather.model.TodayForecast
 import com.omarinc.weather.model.WeatherRepository
+import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.network.ApiState
+import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.utilities.Constants
 import com.omarinc.weather.utilities.Helpers
 import kotlinx.coroutines.Dispatchers
@@ -191,5 +193,49 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
     {
         return _todayForecast.value.get(0)
     }
+
+
+
+
+    private var _weatherDB=MutableStateFlow<DataBaseState<WeatherResponse>>(DataBaseState.Loading)
+    val weatherDB:StateFlow<DataBaseState<WeatherResponse>> = _weatherDB
+
+
+
+    fun insertCashedData(weatherResponse: WeatherResponse)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repo.insertCashedData(weatherResponse)
+        }
+    }
+    fun deleteCashedData()
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repo.deleteCashedData()
+        }
+    }
+
+    fun getCashedData(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            _repo.getCashedData().catch {
+                    e->_weatherDB.value=DataBaseState.Failure(e)
+            }
+                .collect{data->
+                    _weatherDB.value=DataBaseState.SuccessObj(data)
+                }
+        }
+    }
+
+
+
+    fun writeCityToSharedPreferences(key: String, value: String) {
+        _repo.writeStringToSharedPreferences(key, value)
+    }
+
+    fun readCityFromSharedPreferences(key: String): String {
+        return _repo.readStringFromSharedPreferences(key)
+    }
+
 
 }

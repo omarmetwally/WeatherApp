@@ -3,6 +3,7 @@ package com.omarinc.weather.db
 import android.content.Context
 import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.WeatherAlert
+import com.omarinc.weather.model.WeatherResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.withContext
 class WeatherLocalDataSourceImpl private constructor(context: Context):WeatherLocalDataSource{
     private val favoriteDao:FavouriteDao=WeatherDB.getInstance(context).getDao()
     private val alertDao:WeatherAlertDao=WeatherDB.getInstance(context).getAlertDao()
+    private val weatherDao:WeatherDao=WeatherDB.getInstance(context).getWeatherDao()
     private  val TAG = "WeatherLocalDataSourceI"
 
 
@@ -50,6 +52,19 @@ class WeatherLocalDataSourceImpl private constructor(context: Context):WeatherLo
     }
 
     override fun getAllAlerts(): Flow<List<WeatherAlert>> = alertDao.getAllAlerts()
+    override suspend fun insertCashedData(weatherResponse: WeatherResponse) {
+        CoroutineScope(Dispatchers.IO).launch {
+            weatherDao.insertCashedData(weatherResponse)
+        }
+    }
+
+    override suspend fun deleteCashedData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            weatherDao.deleteCashedData()
+        }
+    }
+
+    override fun getCashedData(): Flow<WeatherResponse> = weatherDao.getCashedData()
 
 
 }

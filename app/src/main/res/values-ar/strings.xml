@@ -13,6 +13,7 @@
     <string name="_40_26_c">24/26°م</string>
     <string name="pressure">الضغط</string>
     <string name="_0_hpa">0 هيكتوباسكال</string>
+    <string name="hpa"> هيكتوباسكال</string>
     <string name="_0_precent">0%</string>
     <string name="humidity">الرطوبة</string>
     <string name="_0_m_s">0 م/ث</string>
@@ -72,6 +73,8 @@
     <string name="weather_alert">تنبيه الطقس</string>
     <string name="weather_Condition">حالة الطقس في </string>
     <string name="Dismiss_Button">اغلاق</string>
+    <string name="no_network">اعد الإتصال بالانترنت لكل تستطيع الإضافه</string>
+
 
 </resources>
 
