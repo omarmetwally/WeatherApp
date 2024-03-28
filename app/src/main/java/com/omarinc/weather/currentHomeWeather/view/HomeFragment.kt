@@ -164,37 +164,45 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
-
         if (checkPermissions()) {
-            if (Helpers.isNetworkConnected(requireContext())) {
-                if (city != null) {
-                    flag = false
-                    Log.d(TAG, "City received: ${city.cityName}")
-                    viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
-                    viewModel.getCurrentWeather(
-                        Coordinates(lat = city.latitude, lon = city.longitude),
-                        viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                        "metric"
-                    )
-
-                } else {
-                    flag = true
-                    viewModel.startLocationUpdates(
-                        viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                        "metric"
-                    )
-
-                }
-            } else {
-
-                loadWeatherFromDB()
-            }
-
-
+            handleWeatherUpdatesBasedOnNetwork()
         } else {
             requestLocationPermissions()
         }
+
+    }
+
+
+    private fun handleWeatherUpdatesBasedOnNetwork() {
+        val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
+        if (Helpers.isNetworkConnected(requireContext())) {
+            handleWeatherUpdatesForCity(city)
+        } else {
+            loadWeatherFromDB()
+        }
+    }
+
+    private fun handleWeatherUpdatesForCity(city: FavoriteCity?) {
+        if (city != null) {
+            processWeatherForSpecificCity(city)
+        } else {
+            flag = true
+            viewModel.startLocationUpdates(
+                viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                "metric"
+            )
+        }
+    }
+
+    private fun processWeatherForSpecificCity(city: FavoriteCity) {
+        flag = false
+        Log.d(TAG, "City received: ${city.cityName}")
+        viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
+        viewModel.getCurrentWeather(
+            Coordinates(lat = city.latitude, lon = city.longitude),
+            viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+            "metric"
+        )
     }
 
     private fun loadWeatherFromDB() {
@@ -211,13 +219,17 @@ class HomeFragment : Fragment() {
 
                     is DataBaseState.SuccessObj -> {
                         Log.i(TAG, "setupRecyclerView: Succ")
-                        viewModel.extractFiveDayForecast(result.weatherResponse.list)
-                        viewModel.extractTodayForecast(result.weatherResponse.list)
 
-                        setupRecyclerView()
-                        detailsForecastUI(result.weatherResponse.list)
-                        currentForecastUI(result.weatherResponse)
-                        setVisibility(true)
+                        if (result.weatherResponse != null) {
+                            viewModel.extractFiveDayForecast(result.weatherResponse.list)
+                            viewModel.extractTodayForecast(result.weatherResponse.list)
+
+                            setupRecyclerView()
+                            detailsForecastUI(result.weatherResponse.list)
+                            currentForecastUI(result.weatherResponse)
+                            setVisibility(true)
+                        }
+
 
                     }
 
@@ -315,7 +327,7 @@ class HomeFragment : Fragment() {
 
 
 
-        if (Helpers.isNetworkConnected(requireContext())){
+        if (Helpers.isNetworkConnected(requireContext())) {
 
             if (city != null) {
                 binding.tvLocationName.text = "${city.cityName}"
@@ -324,18 +336,16 @@ class HomeFragment : Fragment() {
                 binding.tvLocationName.text =
                     "${Helpers.setLocationNameByGeoCoder(coordinates, requireContext())}"
 
-                viewModel.writeCityToSharedPreferences(Constants.KEY_Ciy_Name,binding.tvLocationName.text.toString())
+                viewModel.writeCityToSharedPreferences(
+                    Constants.KEY_Ciy_Name,
+                    binding.tvLocationName.text.toString()
+                )
             }
-        }
-        else{
+        } else {
             binding.tvLocationName.text =
                 "${viewModel.readCityFromSharedPreferences(Constants.KEY_Ciy_Name)}"
 
         }
-
-
-
-
 
 //        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
         binding.tvDate.text = "$currentDate"
@@ -384,6 +394,4 @@ class HomeFragment : Fragment() {
 
 
     }
-
-
 }
