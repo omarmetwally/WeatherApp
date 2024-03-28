@@ -29,12 +29,12 @@ class AlertViewModel  (private val _repo: WeatherRepository, val context: Contex
             _repo.insertAlert(alert)
         }
     }
-//    fun deleteFavorite(alert: WeatherAlert)
-//    {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _repo.(alert)
-//        }
-//    }
+    fun deleteFavorite(alert: WeatherAlert)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repo.deleteAlert(alert)
+        }
+    }
 
     fun getAllAlerts(){
         viewModelScope.launch(Dispatchers.IO) {

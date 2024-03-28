@@ -9,11 +9,13 @@ import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.layoutDirection
+import androidx.navigation.fragment.findNavController
 import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
@@ -35,6 +37,7 @@ class SettingFragment : Fragment() {
 
     private lateinit var viewModel: SettingViewModel
     private lateinit var binding: FragmentSettingBinding
+    private  val TAG = "SettingFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +67,14 @@ class SettingFragment : Fragment() {
 
         binding.rgLocation.setOnCheckedChangeListener { _, checkedId ->
             val source = when (checkedId) {
-                R.id.rbMap -> Constants.VALUE_MAP
+                R.id.rbMap ->{
+                    val action = SettingFragmentDirections.actionSettingFragmentToMapFragment()
+                    action.fragmentType= Constants.FRAGMENT_TYPE_SETTINGS
+
+                    Log.i(TAG, "on Map Click: ${action.fragmentType}")
+                    findNavController().navigate(action)
+                    Constants.VALUE_MAP
+                }
                 R.id.rbGps -> Constants.VALUE_GPS
                 else -> Constants.VALUE_GPS
             }
@@ -127,6 +137,7 @@ class SettingFragment : Fragment() {
     private fun loadSettings() {
         when (viewModel.readStringFromSharedPreferences(Constants.KEY_LOCATION_SOURCE)) {
             Constants.VALUE_MAP -> binding.rbMap.isChecked = true
+
             Constants.VALUE_GPS -> binding.rbGps.isChecked = true
             else -> binding.rbGps.isChecked = true
         }

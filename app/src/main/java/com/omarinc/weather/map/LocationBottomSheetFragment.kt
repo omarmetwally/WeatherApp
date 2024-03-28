@@ -28,6 +28,7 @@ import com.omarinc.weather.model.FavoriteCity
 import com.omarinc.weather.model.WeatherAlert
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
+import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
 import java.util.concurrent.TimeUnit
@@ -37,6 +38,7 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
     lateinit var binding:FragmentLocationBottomSheetBinding
     private lateinit var viewModel: FavoriteViewModel
     private lateinit var alertViewModel: AlertViewModel
+    private lateinit var settingsViewModel: SettingViewModel
     private  val TAG = "LocationBottomSheetFrag"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,9 +66,12 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
         binding.tvLat.text = "${getString(R.string.Latitude)}  $lat"
         binding.tvLng.text = "${getString(R.string.Longitude)} $lng"
 
+        Log.i(TAG, "tesssst: $fragmentType")
 
-        if (fragmentType==Constants.FRAGMENT_TYPE)
+        if (fragmentType==Constants.FRAGMENT_TYPE_ALERT)
         {
+            Log.i(TAG, "alert")
+
             alertViewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
 
             binding.btnSaveLocation.setOnClickListener {
@@ -78,8 +83,25 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
             }
 
 
+        }else if(fragmentType==Constants.FRAGMENT_TYPE_SETTINGS)
+        {
+            settingsViewModel = ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
+
+            Log.i(TAG, "settings:")
+
+            Log.i(TAG, "testOmar: $lat -- $lng")
+            binding.btnSaveLocation.setOnClickListener {
+
+                settingsViewModel.writeCoordinatesToSharedPreferences(Constants.LONGITUDE_KEY,lng)
+                settingsViewModel.writeCoordinatesToSharedPreferences(Constants.LATITUDE_KEY,lat)
+                findNavController().navigateUp()
+                dismiss()
+            }
+
         }
         else{
+            Log.i(TAG, "else: ")
+
             viewModel = ViewModelProvider(requireActivity(), factory).get(FavoriteViewModel::class.java)
 
             binding.btnSaveLocation.setOnClickListener {

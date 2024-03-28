@@ -54,6 +54,7 @@ class WeatherRepositoryImpl(
         }
     }
 
+
     override suspend fun getAllFavorites(): Flow<List<FavoriteCity>> {
         return withContext(Dispatchers.IO){
             weatherLocalDataSource.getFavoriteCities()
@@ -68,9 +69,24 @@ class WeatherRepositoryImpl(
        return settingSharedPreferences.readStringFromSharedPreferences(key)
     }
 
+    override fun writeCoordinatesToSharedPreferences(key: String, value: Double) {
+        settingSharedPreferences.writeCoordinatesToSharedPreferences(key,value)
+    }
+
+    override fun readSCoordinatesFromSharedPreferences(key: String): Double {
+        return settingSharedPreferences.readCoordinatesFromSharedPreferences(key)
+    }
+
 
     override suspend fun insertAlert(alert: WeatherAlert) {
         weatherLocalDataSource.insertAlert(alert)
+    }
+
+    override suspend fun deleteAlert(alert: WeatherAlert) {
+        withContext(Dispatchers.IO)
+        {
+            weatherLocalDataSource.deleteAlert(alert)
+        }
     }
 
     override fun getAllAlerts(): Flow<List<WeatherAlert>> {

@@ -2,7 +2,6 @@ package com.omarinc.weather.currentHomeWeather.view
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -43,7 +42,7 @@ class HomeFragment : Fragment() {
     private val myDailyAdapter = MyDailyAdapter()
     private val myHourAdapter = MyHourAdapter()
     private lateinit var viewModel: HomeViewModel
-    private lateinit var viewModelSettings: SettingViewModel
+    private lateinit var settingViewModel: SettingViewModel
     private var flag: Boolean = false
 
     companion object {
@@ -73,7 +72,7 @@ class HomeFragment : Fragment() {
             requireActivity()
         )
         viewModel = ViewModelProvider(requireActivity(), factory).get(HomeViewModel::class.java)
-        viewModelSettings =
+        settingViewModel =
             ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
 
         setupRecyclerView()
@@ -186,9 +185,30 @@ class HomeFragment : Fragment() {
         if (city != null) {
             processWeatherForSpecificCity(city)
         } else {
-            flag = true
+            decideGpsOrMap()
+        }
+    }
+
+    private fun decideGpsOrMap() {
+        flag = true
+
+        if (settingViewModel.readStringFromSharedPreferences(Constants.KEY_LOCATION_SOURCE)==Constants.VALUE_MAP)
+        {
+            Log.i(TAG, "decideGpsOrMap: ${settingViewModel.readCoordinatesFromSharedPreferences(Constants.LATITUDE_KEY)} -- ${settingViewModel.readCoordinatesFromSharedPreferences(Constants.LONGITUDE_KEY)}")
+
+            viewModel.setCoordinates(Coordinates(lat = settingViewModel.readCoordinatesFromSharedPreferences(Constants.LATITUDE_KEY),
+                lon = settingViewModel.readCoordinatesFromSharedPreferences(Constants.LONGITUDE_KEY)))
+            viewModel.getCurrentWeather(
+                Coordinates(
+                    lat = settingViewModel.readCoordinatesFromSharedPreferences(Constants.LATITUDE_KEY),
+                    lon = settingViewModel.readCoordinatesFromSharedPreferences(Constants.LONGITUDE_KEY)),
+                settingViewModel.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                "metric"
+            )
+        }
+        else{
             viewModel.startLocationUpdates(
-                viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                settingViewModel.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
                 "metric"
             )
         }
@@ -200,7 +220,7 @@ class HomeFragment : Fragment() {
         viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
         viewModel.getCurrentWeather(
             Coordinates(lat = city.latitude, lon = city.longitude),
-            viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+            settingViewModel.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
             "metric"
         )
     }
@@ -280,7 +300,7 @@ class HomeFragment : Fragment() {
         if (requestCode == Constants.LocationPermissionID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 viewModel.startLocationUpdates(
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
+                    settingViewModel.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
                     "metric"
                 )
             }

@@ -27,7 +27,8 @@ object Constants{
     const val VALUE_FAHRENHEIT = "imperial"
 
 
-    const val FRAGMENT_TYPE = "alert"
+    const val FRAGMENT_TYPE_ALERT = "alert"
+    const val FRAGMENT_TYPE_SETTINGS = "settings"
     const val LATITUDE_KEY = "lat"
     const val LONGITUDE_KEY = "long"
     const val LOCATION_NAME_KEY = "location"

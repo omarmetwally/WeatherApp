@@ -14,5 +14,13 @@ class SettingViewModel (private val _repo: WeatherRepository, val context: Conte
         return _repo.readStringFromSharedPreferences(key)
     }
 
+    fun writeCoordinatesToSharedPreferences(key: String, value: Double) {
+        _repo.writeCoordinatesToSharedPreferences(key, value)
+    }
+
+    fun readCoordinatesFromSharedPreferences(key: String): Double {
+        return _repo.readSCoordinatesFromSharedPreferences(key)
+    }
+
 
 }

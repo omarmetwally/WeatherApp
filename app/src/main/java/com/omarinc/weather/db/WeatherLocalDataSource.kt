@@ -12,7 +12,9 @@ interface WeatherLocalDataSource {
 
 
      suspend fun insertAlert(alert: WeatherAlert)
-     fun getAllAlerts(): Flow<List<WeatherAlert>>
+    suspend fun deleteAlert(alert: WeatherAlert)
+
+    fun getAllAlerts(): Flow<List<WeatherAlert>>
 
 
     suspend fun insertCashedData(weatherResponse: WeatherResponse)

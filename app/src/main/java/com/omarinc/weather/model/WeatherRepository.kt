@@ -19,8 +19,14 @@ interface WeatherRepository {
     fun readStringFromSharedPreferences(key: String): String
 
 
+    fun writeCoordinatesToSharedPreferences(key: String, value: Double)
+    fun readSCoordinatesFromSharedPreferences(key: String): Double
+
+
      suspend fun insertAlert(alert: WeatherAlert)
-     fun getAllAlerts(): Flow<List<WeatherAlert>>
+    suspend fun deleteAlert(alert: WeatherAlert)
+
+    fun getAllAlerts(): Flow<List<WeatherAlert>>
 
 
     suspend fun insertCashedData(weatherResponse: WeatherResponse)

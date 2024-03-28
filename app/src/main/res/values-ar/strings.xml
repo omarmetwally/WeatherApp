@@ -74,6 +74,8 @@
     <string name="weather_Condition">حالة الطقس في </string>
     <string name="Dismiss_Button">اغلاق</string>
     <string name="no_network">اعد الإتصال بالانترنت لكل تستطيع الإضافه</string>
+    <string name="undo">تراجع</string>
+
 
 
 </resources>

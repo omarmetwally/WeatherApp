@@ -49,7 +49,11 @@
         android:id="@+id/settingFragment"
         android:name="com.omarinc.weather.settings.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/alertFragment"
         android:name="com.omarinc.weather.alert.view.AlertFragment"

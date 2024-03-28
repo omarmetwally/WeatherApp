@@ -79,6 +79,7 @@
     <string name="weather_Condition">Weather Condition in</string>
     <string name="Dismiss_Button">Dismiss</string>
     <string name="no_network">Please Connect to a Network to Add</string>
+    <string name="undo">UNDO</string>
 
 
 </resources>

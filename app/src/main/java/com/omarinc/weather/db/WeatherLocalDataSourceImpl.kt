@@ -51,6 +51,14 @@ class WeatherLocalDataSourceImpl private constructor(context: Context):WeatherLo
         }
     }
 
+    override suspend fun deleteAlert(alert: WeatherAlert) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            alertDao.deleteAlert(alert)
+        }
+
+    }
+
     override fun getAllAlerts(): Flow<List<WeatherAlert>> = alertDao.getAllAlerts()
     override suspend fun insertCashedData(weatherResponse: WeatherResponse) {
         CoroutineScope(Dispatchers.IO).launch {

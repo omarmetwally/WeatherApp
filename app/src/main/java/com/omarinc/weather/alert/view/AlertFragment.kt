@@ -1,9 +1,11 @@
 package com.omarinc.weather.alert.view
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -18,19 +20,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.omarinc.weather.R
+import com.omarinc.weather.alert.services.AlarmReceiver
 import com.omarinc.weather.alert.viewmodel.AlertViewModel
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentAlertBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
+import com.omarinc.weather.favorite.view.OnClick
+import com.omarinc.weather.model.WeatherAlert
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
@@ -43,14 +46,16 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
-class AlertFragment : Fragment() {
+class AlertFragment : Fragment(), OnAlertClick {
 
 
-    private  lateinit var binding: FragmentAlertBinding
-    private val myAlertAdapter = AlertAdapter()
+    private lateinit var binding: FragmentAlertBinding
+    private lateinit var myAlertAdapter: AlertAdapter
     private lateinit var viewModel: AlertViewModel
     private lateinit var settingsViewModel: SettingViewModel
-    private  val TAG = "AlertFragment"
+    private val TAG = "AlertFragment"
+    var onClick: OnAlertClick? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +68,7 @@ class AlertFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        onClick = this
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
@@ -72,68 +78,86 @@ class AlertFragment : Fragment() {
             requireActivity()
         )
         viewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
-        settingsViewModel = ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
+        settingsViewModel =
+            ViewModelProvider(requireActivity(), factory).get(SettingViewModel::class.java)
         viewModel.getAllAlerts()
 
         setupRecyclerView()
 
-        binding.fabAddAlert.setOnClickListener{
+        binding.fabAddAlert.setOnClickListener {
 
 
-
-
-            if(Helpers.isNetworkConnected(requireContext())){
+            if (Helpers.isNetworkConnected(requireContext())) {
                 setupNotificationChannel()
                 showDateTimePicker()
+            } else {
+                Snackbar.make(
+                    binding.root,
+                    "${getString(R.string.no_network)}",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
-            else{
-            Snackbar.make(binding.root,"${getString(R.string.no_network)}", Snackbar.LENGTH_SHORT).show()
-        }
         }
 
     }
 
     private fun setupRecyclerView() {
+
+        myAlertAdapter = AlertAdapter {
+            onClick?.onDeleteAlertClick(it)
+        }
         binding.rvAlerts.apply {
-            adapter=myAlertAdapter
+            adapter = myAlertAdapter
         }
 
-       lifecycleScope.launch {
-           viewModel.alert.collectLatest { result->
-               when(result)
-               {
-                   is DataBaseState.Loading->
-                   {
-                       /// loading
-                       Log.i(TAG, "setupRecyclerView: load")
-                   }
-                   is DataBaseState.Success->
-                   {
-                       Log.i(TAG, "setupRecyclerView: Succ")
+        lifecycleScope.launch {
+            viewModel.alert.collectLatest { result ->
+                when (result) {
+                    is DataBaseState.Loading -> {
+                        /// loading
+                        Log.i(TAG, "setupRecyclerView: load")
+                    }
 
-                       if (result.data.isEmpty()) {
-                           binding.ivNoLocation.visibility = View.VISIBLE
-                           binding.loadingLottie.visibility = View.VISIBLE
-                       } else {
-                           binding.ivNoLocation.visibility = View.GONE
-                           binding.loadingLottie.visibility = View.INVISIBLE
-                       }
-                       myAlertAdapter.submitList(result.data)
-                   }
-                   is DataBaseState.Failure->
-                   {
-                       Log.i(TAG, "setupRecyclerView Failure ")
+                    is DataBaseState.Success -> {
+                        Log.i(TAG, "setupRecyclerView: Succ")
 
-                   }
+                        if (result.data.isEmpty()) {
+                            binding.ivNoLocation.visibility = View.VISIBLE
+                            binding.loadingLottie.visibility = View.VISIBLE
+                        } else {
+                            binding.ivNoLocation.visibility = View.GONE
+                            binding.loadingLottie.visibility = View.INVISIBLE
+                        }
+                        myAlertAdapter.submitList(result.data)
+                    }
 
-                   else -> {}
-               }
+                    is DataBaseState.Failure -> {
+                        Log.i(TAG, "setupRecyclerView Failure ")
 
-           }
-       }
+                    }
+
+                    else -> {}
+                }
+
+            }
+        }
 
 
     }
+
+
+//    fun showDateTimePicker() {
+//        val currentDate = Calendar.getInstance()
+//        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+//            val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+//                val selectedDate = Calendar.getInstance()
+//                selectedDate.set(year, month, dayOfMonth, hourOfDay, minute)
+//                navigateToLocationSelection(selectedDate.timeInMillis)
+//            }
+//            TimePickerDialog(context, timeSetListener, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show()
+//        }
+//        DatePickerDialog(requireContext(), dateSetListener, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH)).show()
+//    }
 
 
     fun showDateTimePicker() {
@@ -144,15 +168,43 @@ class AlertFragment : Fragment() {
                 selectedDate.set(year, month, dayOfMonth, hourOfDay, minute)
                 navigateToLocationSelection(selectedDate.timeInMillis)
             }
-            TimePickerDialog(context, timeSetListener, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show()
+
+            val timePickerDialog = TimePickerDialog(
+                context, timeSetListener, currentDate.get(Calendar.HOUR_OF_DAY),
+                currentDate.get(Calendar.MINUTE), false
+            )
+
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(year, month, dayOfMonth)
+            if (selectedDate.get(Calendar.DAY_OF_YEAR) == currentDate.get(Calendar.DAY_OF_YEAR) &&
+                selectedDate.get(Calendar.YEAR) == currentDate.get(Calendar.YEAR)
+            ) {
+                timePickerDialog.updateTime(
+                    currentDate.get(Calendar.HOUR_OF_DAY),
+                    currentDate.get(Calendar.MINUTE)
+                )
+            }
+
+            timePickerDialog.show()
         }
-        DatePickerDialog(requireContext(), dateSetListener, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH)).show()
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), dateSetListener,
+            currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
+            currentDate.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            datePicker.minDate = System.currentTimeMillis() - 1000
+        }
+        datePickerDialog.show()
     }
+
+
     fun navigateToLocationSelection(timeInMillis: Long) {
         Log.i(TAG, "navigateToLocationSelection: $timeInMillis")
         val action = AlertFragmentDirections.actionAlertFragmentToMapFragment()
-        action.fragmentType= Constants.FRAGMENT_TYPE
-        action.timeStamp=timeInMillis
+        action.fragmentType = Constants.FRAGMENT_TYPE_ALERT
+        action.timeStamp = timeInMillis
+
         findNavController().navigate(action)
     }
 
@@ -163,29 +215,56 @@ class AlertFragment : Fragment() {
             val descriptionText = requireContext().getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
             Log.i(TAG, "setupNotificationChannel: ")
-            val channel = NotificationChannel(WeatherNotificationWorker.CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
+            val channel =
+                NotificationChannel(WeatherNotificationWorker.CHANNEL_ID, name, importance).apply {
+                    description = descriptionText
+                }
             val notificationManager: NotificationManager =
                 requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
         if (Build.VERSION.SDK_INT >= 33) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(),  Array(1){Manifest.permission.POST_NOTIFICATIONS},101);
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    Array(1) { Manifest.permission.POST_NOTIFICATIONS },
+                    101
+                );
             }
 
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:com.omarinc.weather"))
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:com.omarinc.weather")
+            )
             startActivityForResult(intent, 101)
         }
 
-        settingsViewModel.writeStringToSharedPreferences(Constants.KEY_NOTIFICATIONS_ENABLED,Constants.VALUE_ENABLE)
+        settingsViewModel.writeStringToSharedPreferences(
+            Constants.KEY_NOTIFICATIONS_ENABLED,
+            Constants.VALUE_ENABLE
+        )
 
     }
+
+    override fun onDeleteAlertClick(alert: WeatherAlert) {
+        viewModel.deleteFavorite(alert)
+        val snackbar = Snackbar.make(binding.root, "${alert.locationName} Deleted", Snackbar.LENGTH_LONG)
+        snackbar.setAction(getString(R.string.undo)) {
+            viewModel.insertAlert(alert)
+        }
+        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+        snackbar.show()
+
+    }
+
+
 
 
 

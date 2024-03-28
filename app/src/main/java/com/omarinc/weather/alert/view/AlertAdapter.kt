@@ -1,6 +1,5 @@
 package com.omarinc.weather.alert.view
 
-import com.omarinc.weather.currentHomeWeather.view.setIcon
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class AlertAdapter : ListAdapter<WeatherAlert, AlertAdapter.ViewHolder>(
+class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit) : ListAdapter<WeatherAlert, AlertAdapter.ViewHolder>(
     AlertDiffUtil()
 ) {
 
@@ -32,6 +31,15 @@ class AlertAdapter : ListAdapter<WeatherAlert, AlertAdapter.ViewHolder>(
         with(holder.binding) {
             tvDateTime.text = formatTimestamp(currentAlert.alertTime)
             tvCity.text = currentAlert.locationName
+            ivIconDelete.setOnClickListener{
+                onDeleteClick(currentAlert)
+            }
+            if (currentAlert.alertTime < System.currentTimeMillis()) {
+                tvDateTime.paintFlags = tvDateTime.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                tvDateTime.setTextColor(holder.itemView.context.getColor(R.color.red))
+                tvCity.paintFlags = tvDateTime.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                tvCity.setTextColor(holder.itemView.context.getColor(R.color.red))
+            }
 
         }
     }
