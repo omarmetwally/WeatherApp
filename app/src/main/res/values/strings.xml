@@ -62,9 +62,10 @@
     <string name="fahrenheit">Fahrenheit</string>
     <string name="ok">OK</string>
     <string name="date">28 August</string>
-    <string name="k">K</string>
-    <string name="c">C</string>
-    <string name="f">F</string>
+    <string name="k"> °k</string>
+    <string name="c"> °C</string>
+    <string name="f"> °F</string>
+
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="percentage">%</string>

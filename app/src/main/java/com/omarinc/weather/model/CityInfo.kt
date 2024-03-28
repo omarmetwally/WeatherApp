@@ -2,9 +2,9 @@ package com.omarinc.weather.model
 
 data class CityInfo(
     val id: Int,
-    val name: String,
+    var name: String,
     val coord: Coordinates,
-    val country: String,
+    var country: String,
     val population: Int,
     val timezone: Int,
     val sunrise: Long,

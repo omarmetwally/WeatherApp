@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -103,8 +105,16 @@ class SettingFragment : Fragment() {
 
         binding.rgNotification.setOnCheckedChangeListener { _, checkedId ->
             val source = when (checkedId) {
-                R.id.rbEnable -> Constants.VALUE_ENABLE
-                R.id.rbDisable -> Constants.VALUE_DISABLE
+                R.id.rbEnable -> {
+                    openAppNotificationSettings()
+                    Constants.VALUE_ENABLE
+                }
+                R.id.rbDisable ->
+
+                {
+                    openAppNotificationSettings()
+                    Constants.VALUE_DISABLE
+                }
 
                 else -> Constants.VALUE_DISABLE
             }
@@ -157,6 +167,28 @@ class SettingFragment : Fragment() {
 //        resources.updateConfiguration(config, resources.displayMetrics)
 //    }
 
+
+    private fun openAppNotificationSettings() {
+        val intent = Intent().apply {
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                    action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                    action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                    putExtra("app_package", requireContext().packageName)
+                    putExtra("app_uid", requireContext().applicationInfo.uid)
+                }
+                else -> {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    addCategory(Intent.CATEGORY_DEFAULT)
+                    data = Uri.parse("package:${requireContext().packageName}")
+                }
+            }
+        }
+        startActivity(intent)
+    }
 
 
 }

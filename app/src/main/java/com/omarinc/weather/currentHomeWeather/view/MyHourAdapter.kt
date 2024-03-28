@@ -29,7 +29,8 @@ class MyHourAdapter : ListAdapter<TodayForecast, MyHourAdapter.ViewHolder>(
 
         with(holder.binding) {
             tvTimeHours.text = currentForecast.time
-            tvDegreeHours.text = String.format("%s°C", currentForecast.temp.toString())
+
+            tvDegreeHours.text =currentForecast.temp.toString()
             setIcon(currentForecast.icon, ivStatusIconHours)
         }
     }
@@ -45,3 +46,4 @@ class TodayForecastUIDiffUtil : DiffUtil.ItemCallback<TodayForecast>() {
         return oldItem == newItem
     }
 }
+

@@ -33,7 +33,7 @@ class MyDailyAdapter : ListAdapter<DailyForecast, MyDailyAdapter.ViewHolder>(
             tvDayDays.text = currentWeather.date
             tvStatusDays.text = currentWeather.condition
             setIcon(currentWeather.icon, ivIconDays)
-            tvDegreeDays.text = String.format("%s°C", currentWeather.averageTemp.toString())
+            tvDegreeDays.text = currentWeather.averageTemp.toString()
         }
     }
 

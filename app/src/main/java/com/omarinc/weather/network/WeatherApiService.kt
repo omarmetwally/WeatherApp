@@ -13,6 +13,6 @@ interface WeatherApiService {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("lang") language: String,
-        @Query("units") units:String
+        @Query("units") units:String="metric"
     ): Response<WeatherResponse>
 }

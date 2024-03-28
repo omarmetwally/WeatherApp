@@ -103,6 +103,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                         .transition(DrawableTransitionOptions.withCrossFade())
                                         .into(floatyView.findViewById(R.id.imageView2))
                                     val button = floatyView.findViewById<Button>(R.id.dismissButton)
+                                    button.text="${updatedContext.getString(R.string.Dismiss_Button)}"
                                     button.setOnClickListener {
                                         windowManager.removeView(floatyView)
                                     }

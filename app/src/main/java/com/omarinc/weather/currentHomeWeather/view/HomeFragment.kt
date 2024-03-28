@@ -3,7 +3,6 @@ package com.omarinc.weather.currentHomeWeather.view
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.opengl.Visibility
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -14,8 +13,6 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.navArgs
-import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentHomeBinding
@@ -159,23 +156,21 @@ class HomeFragment : Fragment() {
         super.onStart()
         val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
 
-//      viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE)
         if (checkPermissions()) {
-//            getLocation()
 
             if (city != null) {
-                // Use the city argument as needed, for example:
                 Log.d(TAG, "City received: ${city.cityName}")
+                viewModel.setCoordinates(Coordinates(lat = city.latitude, lon = city.longitude))
                 viewModel.getCurrentWeather(
                     Coordinates(lat = city.latitude, lon = city.longitude),
                     viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                    "metric"
                 )
 
             } else {
                 viewModel.startLocationUpdates(
                     viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                    "metric"
                 )
 
             }
@@ -221,7 +216,7 @@ class HomeFragment : Fragment() {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 viewModel.startLocationUpdates(
                     viewModelSettings.readStringFromSharedPreferences(Constants.KEY_LANGUAGE),
-                    viewModelSettings.readStringFromSharedPreferences(Constants.KEY_TEMPERATURE_UNIT)
+                    "metric"
                 )
             }
         }
@@ -261,22 +256,29 @@ class HomeFragment : Fragment() {
     }
 
     fun currentForecastUI(weather: WeatherResponse) {
+        val city = arguments?.let { HomeFragmentArgs.fromBundle(it).city }
         val currentDate = SimpleDateFormat("EEE, d MMM -yy", Locale.getDefault()).format(Date())
-        var coordinates: Coordinates = viewModel.getCityName()
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        var coordinates: Coordinates = viewModel.getCoordinates()
 
 
+        if(city!=null)
+        {
+            binding.tvLocationName.text = "${city.cityName}"
 
-        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
+        }
+        else{
+            binding.tvLocationName.text = "${Helpers.setLocationNameByGeoCoder(coordinates,requireContext())}"
+
+        }
+
+
+//        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
         binding.tvDate.text = "$currentDate"
         Log.i(TAG, "currentForecastUI: ${viewModel.todayForecast.value}")
-
-
-
         if (viewModel.todayForecast.value.isNotEmpty()) {
             val firstForecast = viewModel.todayForecast.value[0]
             setIcon(firstForecast.icon, binding.ivWeather)
-            binding.tvCurrentDegree.text = "${firstForecast.temp}°${getString(R.string.c)}"
+            binding.tvCurrentDegree.text = "${firstForecast.temp}"
             binding.tvWeatherStatus.text = firstForecast.condition
         } else {
             Log.d(TAG, "No forecasts available")
@@ -300,13 +302,22 @@ class HomeFragment : Fragment() {
 
         val pressure = numberFormat.format(list[0].main.pressure)
         val humidity = numberFormat.format(list[0].main.humidity)
-        val windSpeed = numberFormat.format(list[0].wind.speed)
+        var windSpeed = numberFormat.format(list[0].wind.speed)
         val cloudiness = numberFormat.format(list[0].clouds.all)
 
         binding.tvDynamicPressure.text = "${pressure} mb"
         binding.tvDynamicHumidity.text = "${humidity}%"
-        binding.tvDynamicWind.text = "${windSpeed} m/s"
         binding.tvDynamicCloud.text = "${cloudiness}%"
+        if(SharedPreferencesImpl.getInstance(requireContext()).readStringFromSharedPreferences(Constants.KEY_WIND_SPEED_UNIT)==Constants.VALUE_MILE_HOUR)
+        {
+            windSpeed = numberFormat.format(Helpers.meterPerSecondToMilePerHour(list[0].wind.speed))
+            binding.tvDynamicWind.text = "${windSpeed} mile/h"
+        }
+        else{
+            binding.tvDynamicWind.text = "${windSpeed} meter/s"
+        }
+
+
 
 
     }

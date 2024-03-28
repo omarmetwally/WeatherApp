@@ -54,7 +54,7 @@
             android:maxHeight="100dp"
             android:text="October"
             android:textColor="@color/text_color"
-            android:textSize="26sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
