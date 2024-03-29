@@ -5,16 +5,16 @@
       <entry key="FavouriteDaoTest">
         <State />
       </entry>
+      <entry key="WeatherAlertDaoTest">
+        <State />
+      </entry>
+      <entry key="WeatherDaoTest">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="getAllFavouriteCites_containsInsertedCities()">
-        <State />
-      </entry>
       <entry key="getAllFavouriteCites_emitsLatestData()">
-        <State />
-      </entry>
-      <entry key="getAllFavouriteCites_emptyListWhenNoCitiesAdded()">
         <State />
       </entry>
       <entry key="getAllFavouriteCites_reflectsChangesAfterDeletion()">
