@@ -83,7 +83,7 @@ class WeatherAlertDaoTest {
     @Test
     fun getAllAlerts_reflectsChangesAfterDeletion() = runBlockingTest {
         val alert1 =  WeatherAlert(1, "October",0.0,0.0,123456)
-        val alert2 =  WeatherAlert(1, "iTi",0.0,0.0,123456)
+        val alert2 =  WeatherAlert(2, "iTi",0.0,0.0,123456)
         weatherAlertDao.insertAlert(alert1)
         weatherAlertDao.insertAlert(alert2)
         weatherAlertDao.deleteAlert(alert1)

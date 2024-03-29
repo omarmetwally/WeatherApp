@@ -2,22 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="FavouriteDaoTest">
-        <State />
-      </entry>
-      <entry key="WeatherAlertDaoTest">
-        <State />
-      </entry>
-      <entry key="WeatherDaoTest">
-        <State />
-      </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="getAllFavouriteCites_emitsLatestData()">
+      <entry key="deleteAlert_and_getAllAlerts()">
         <State />
       </entry>
-      <entry key="getAllFavouriteCites_reflectsChangesAfterDeletion()">
+      <entry key="deleteCashedData_and_getCashedData()">
+        <State />
+      </entry>
+      <entry key="deleteFavoriteCity_and_getFavoriteCities()">
+        <State />
+      </entry>
+      <entry key="insertAlert_and_getAllAlerts()">
+        <State />
+      </entry>
+      <entry key="insertCashedData_and_getCashedData()">
         <State />
       </entry>
     </value>
