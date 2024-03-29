@@ -21,5 +21,5 @@ interface WeatherLocalDataSource {
 
     suspend fun deleteCashedData()
 
-    fun getCashedData(): Flow<WeatherResponse>
+    fun getCashedData(): Flow<WeatherResponse>?
 }

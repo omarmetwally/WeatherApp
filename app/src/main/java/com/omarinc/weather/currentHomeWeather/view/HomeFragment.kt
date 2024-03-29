@@ -129,7 +129,10 @@ class HomeFragment : Fragment() {
                     }
 
                     is ApiState.Success -> {
-
+                        if (flag) {
+//                            viewModel.deleteCashedData()
+                            viewModel.insertCashedData(result.weatherResponse)
+                        }
 
                         Log.i(TAG, "observeWeather: sus ${result.weatherResponse}")
                         viewModel.extractFiveDayForecast(result.weatherResponse.list)
@@ -141,11 +144,7 @@ class HomeFragment : Fragment() {
                         setVisibility(true)
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.fiveDayForecast.value}")
                         Log.i(TAG, "extractFiveDayForecast: sus ${viewModel.todayForecast.value}")
-                        if (flag) {
-                            Log.i(TAG, "flag: gwaaaa $flag")
-                            viewModel.deleteCashedData()
-                            viewModel.insertCashedData(result.weatherResponse)
-                        }
+
 
                     }
 

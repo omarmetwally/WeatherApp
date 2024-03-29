@@ -107,7 +107,7 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override fun getCashedData(): Flow<WeatherResponse> {
+    override fun getCashedData(): Flow<WeatherResponse>? {
         return weatherLocalDataSource.getCashedData()
     }
 

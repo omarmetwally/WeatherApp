@@ -205,6 +205,7 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
     fun insertCashedData(weatherResponse: WeatherResponse)
     {
         viewModelScope.launch(Dispatchers.IO) {
+           _repo.deleteCashedData()
             _repo.insertCashedData(weatherResponse)
         }
     }
@@ -218,14 +219,26 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
     fun getCashedData(){
         viewModelScope.launch(Dispatchers.IO) {
 
-            _repo.getCashedData().catch {
+            _repo.getCashedData()?.catch {
                     e->_weatherDB.value=DataBaseState.Failure(e)
             }
-                .collect{data->
-                    _weatherDB.value=DataBaseState.SuccessObj(data)
+                ?.collect{data->
+
+                    try {
+                        _weatherDB.value=DataBaseState.SuccessObj(data)
+
+                    }
+                    catch (e:Exception)
+                    {
+                        _weatherDB.value=DataBaseState.Failure(e)
+
+                    }
+
                 }
         }
     }
+
+
 
 
 
