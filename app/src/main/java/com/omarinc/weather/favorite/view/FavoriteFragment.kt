@@ -110,32 +110,14 @@ class favoriteFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            viewModel.favorite.collectLatest{ result->
-                when(result)
-                {
-                    is DataBaseState.Loading->
-                    {
-                     /// loading
-                        Log.i(TAG, "setupRecyclerView: load")
-                    } is DataBaseState.Success->
-                    {
-                        Log.i(TAG, "setupRecyclerView: Succ")
-                        if (result.data.isEmpty()) {
-                            binding.ivNoLocation.visibility = View.VISIBLE
-                            binding.loadingLottie.visibility = View.VISIBLE
-                        } else {
-                            binding.ivNoLocation.visibility = View.GONE
-                            binding.loadingLottie.visibility = View.INVISIBLE
-                        }
-                        myFavoriteAdapter.submitList(result.data)
-
-                    }
-                    is DataBaseState.Failure->
-                    {
-                        Log.i(TAG, "setupRecyclerView Failure ")
-                    }
-
-                    else -> {}
+            viewModel.favorite.collectLatest{ cities->
+                if (cities.isEmpty()) {
+                    binding.ivNoLocation.visibility = View.VISIBLE
+                    binding.loadingLottie.visibility = View.VISIBLE
+                } else {
+                    binding.ivNoLocation.visibility = View.GONE
+                    binding.loadingLottie.visibility = View.GONE
+                    myFavoriteAdapter.submitList(cities)
                 }
             }
         }

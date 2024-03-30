@@ -1,11 +1,9 @@
 package com.omarinc.weather.alert.view
 
 import android.Manifest
-import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -26,16 +24,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.omarinc.weather.R
-import com.omarinc.weather.alert.services.AlarmReceiver
 import com.omarinc.weather.alert.viewmodel.AlertViewModel
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentAlertBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
-import com.omarinc.weather.favorite.view.OnClick
 import com.omarinc.weather.model.WeatherAlert
 import com.omarinc.weather.model.WeatherRepositoryImpl
-import com.omarinc.weather.network.DataBaseState
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
@@ -111,34 +106,15 @@ class AlertFragment : Fragment(), OnAlertClick {
         }
 
         lifecycleScope.launch {
-            viewModel.alert.collectLatest { result ->
-                when (result) {
-                    is DataBaseState.Loading -> {
-                        /// loading
-                        Log.i(TAG, "setupRecyclerView: load")
-                    }
-
-                    is DataBaseState.Success -> {
-                        Log.i(TAG, "setupRecyclerView: Succ")
-
-                        if (result.data.isEmpty()) {
-                            binding.ivNoLocation.visibility = View.VISIBLE
-                            binding.loadingLottie.visibility = View.VISIBLE
-                        } else {
-                            binding.ivNoLocation.visibility = View.GONE
-                            binding.loadingLottie.visibility = View.INVISIBLE
-                        }
-                        myAlertAdapter.submitList(result.data)
-                    }
-
-                    is DataBaseState.Failure -> {
-                        Log.i(TAG, "setupRecyclerView Failure ")
-
-                    }
-
-                    else -> {}
+            viewModel.alert.collectLatest { alerts ->
+                if (alerts.isEmpty()) {
+                    binding.ivNoLocation.visibility = View.VISIBLE
+                    binding.loadingLottie.visibility = View.VISIBLE
+                } else {
+                    binding.ivNoLocation.visibility = View.GONE
+                    binding.loadingLottie.visibility = View.GONE
+                    myAlertAdapter.submitList(alerts)
                 }
-
             }
         }
 
@@ -254,7 +230,7 @@ class AlertFragment : Fragment(), OnAlertClick {
     }
 
     override fun onDeleteAlertClick(alert: WeatherAlert) {
-        viewModel.deleteFavorite(alert)
+        viewModel.deleteAlert(alert)
         val snackbar = Snackbar.make(binding.root, "${alert.locationName} Deleted", Snackbar.LENGTH_LONG)
         snackbar.setAction(getString(R.string.undo)) {
             viewModel.insertAlert(alert)

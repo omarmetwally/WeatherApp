@@ -8,11 +8,12 @@ import com.omarinc.weather.model.Coordinates
 import com.omarinc.weather.model.WeatherAlert
 import com.omarinc.weather.model.WeatherRepository
 import com.omarinc.weather.network.ApiState
-import com.omarinc.weather.network.DataBaseState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class AlertViewModel  (private val _repo: WeatherRepository, val context: Context) :
@@ -20,16 +21,20 @@ class AlertViewModel  (private val _repo: WeatherRepository, val context: Contex
 
 
 
-    private  var _alert= MutableStateFlow<DataBaseState<WeatherAlert>>(DataBaseState.Loading)
-    val alert: StateFlow<DataBaseState<WeatherAlert>> = _alert
+    private var _alert = MutableStateFlow<List<WeatherAlert>>(emptyList())
+    val alert: StateFlow<List<WeatherAlert>> = _alert
 
+
+    init {
+        getAllAlerts()
+    }
     fun insertAlert(alert: WeatherAlert)
     {
         viewModelScope.launch(Dispatchers.IO) {
             _repo.insertAlert(alert)
         }
     }
-    fun deleteFavorite(alert: WeatherAlert)
+    fun deleteAlert(alert: WeatherAlert)
     {
         viewModelScope.launch(Dispatchers.IO) {
             _repo.deleteAlert(alert)
@@ -40,10 +45,11 @@ class AlertViewModel  (private val _repo: WeatherRepository, val context: Contex
         viewModelScope.launch(Dispatchers.IO) {
 
             _repo.getAllAlerts().catch {
-                    e->_alert.value=DataBaseState.Failure(e)
+                    e-> Log.e("AlertViewModel", "Failed to fetch alerts: ${e.message}")
+
             }
-                .collect{data->
-                    _alert.value=DataBaseState.Success(data)
+                .collectLatest{data->
+                    _alert.value=data
                 }
         }
     }

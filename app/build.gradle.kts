@@ -42,7 +42,6 @@ android {
         dataBinding =true
     }
 }
-
 dependencies {
 
     //Room
@@ -128,6 +127,8 @@ dependencies {
     androidTestImplementation ("androidx.arch.core:core-testing:2.1.0")
 
 
+    testImplementation ("io.mockk:mockk:1.13.10")
+    androidTestImplementation ("io.mockk:mockk-android:1.12.5")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

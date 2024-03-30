@@ -21,20 +21,23 @@ class FavoriteViewModel  (private val _repo: WeatherRepository, val context: Con
 //        private var _favorite:MutableLiveData<List<FavoriteCity>> = MutableLiveData<List<FavoriteCity>>()
 //        val favorite:Liva
 
-        private  var _favorite=MutableStateFlow<DataBaseState<FavoriteCity>>(DataBaseState.Loading)
-        val favorite:StateFlow<DataBaseState<FavoriteCity>> = _favorite
-
+        private var _favorite = MutableStateFlow<List<FavoriteCity>>(emptyList())
+        val favorite: StateFlow<List<FavoriteCity>> = _favorite
 
         fun insertFavorite(city:FavoriteCity)
         {
             viewModelScope.launch(Dispatchers.IO) {
                 _repo.insertFavorite(city)
+                getAllFavorites()
+
             }
         }
         fun deleteFavorite(city: FavoriteCity)
         {
             viewModelScope.launch(Dispatchers.IO) {
                 _repo.deleteFavorite(city)
+                getAllFavorites()
+
             }
         }
 
@@ -42,10 +45,10 @@ class FavoriteViewModel  (private val _repo: WeatherRepository, val context: Con
             viewModelScope.launch(Dispatchers.IO) {
 
                 _repo.getAllFavorites().catch {
-                    e->_favorite.value=DataBaseState.Failure(e)
+//                    e->_favorite.value=e
                 }
                     .collect{data->
-                        _favorite.value=DataBaseState.Success(data)
+                        _favorite.value=data
                     }
             }
         }
