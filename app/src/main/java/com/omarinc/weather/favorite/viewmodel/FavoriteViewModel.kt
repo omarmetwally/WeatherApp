@@ -24,6 +24,10 @@ class FavoriteViewModel  (private val _repo: WeatherRepository, val context: Con
         private var _favorite = MutableStateFlow<List<FavoriteCity>>(emptyList())
         val favorite: StateFlow<List<FavoriteCity>> = _favorite
 
+
+    init {
+        getAllFavorites()
+    }
         fun insertFavorite(city:FavoriteCity)
         {
             viewModelScope.launch(Dispatchers.IO) {

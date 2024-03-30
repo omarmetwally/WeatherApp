@@ -21,17 +21,20 @@ class FakeWeatherRepository : WeatherRepository {
         response?.let { emit(it) } ?: error("WeatherResponse not set in FakeWeatherRepository")
     }
 
+    private val _favorites = MutableStateFlow<List<FavoriteCity>>(emptyList())
+
     override suspend fun insertFavorite(city: FavoriteCity) {
-        TODO("Not yet implemented")
+//        val updatedFavorite = _favorites.value.toMutableList().apply { add(city) }
+//        _favorites.emit(updatedFavorite)
+        _favorites.value= listOf(city)
+
     }
 
     override suspend fun deleteFavorite(city: FavoriteCity) {
-        TODO("Not yet implemented")
-    }
+        val updatedFavorite = _favorites.value.toMutableList().apply { remove(city) }
+        _favorites.emit(updatedFavorite)    }
 
-    override suspend fun getAllFavorites(): Flow<List<FavoriteCity>> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAllFavorites(): Flow<List<FavoriteCity>> = _favorites
 
     override fun writeStringToSharedPreferences(key: String, value: String) {
         TODO("Not yet implemented")
