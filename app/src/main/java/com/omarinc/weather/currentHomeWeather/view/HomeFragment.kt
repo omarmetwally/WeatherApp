@@ -358,7 +358,7 @@ class HomeFragment : Fragment() {
         Log.i(TAG, "currentForecastUI: ${viewModel.todayForecast.value}")
         if (viewModel.todayForecast.value.isNotEmpty()) {
             val firstForecast = viewModel.todayForecast.value[0]
-            setIcon(firstForecast.icon, binding.ivWeather)
+            Helpers.setLottieAnimation(firstForecast.icon, binding.ivWeather)
             binding.tvCurrentDegree.text = "${firstForecast.temp}"
             binding.tvWeatherStatus.text = firstForecast.condition
         } else {

@@ -29,6 +29,7 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.airbnb.lottie.LottieAnimationView
 import com.omarinc.weather.R
 import com.omarinc.weather.alert.services.AlarmReceiver
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
@@ -252,5 +253,31 @@ object Helpers {
         }
     }
 
+
+    fun setLottieAnimation(id: String, animationView: LottieAnimationView) {
+        val animationResId = when (id) {
+            "01d" -> R.raw.clear_sky_anim
+            "02d" -> R.raw.few_clouds
+            "03d" -> R.raw.few_clouds
+            "04d" -> R.raw.scat_clouds
+            "09d" -> R.raw.rain_anim
+            "10d" -> R.raw.rain_anim
+            "11d" -> R.raw.thunderstorm
+            "13d" -> R.raw.snow_anim
+            "50d" -> R.raw.mist
+            "01n" -> R.raw.clear_sky_anim_night
+            "02n" -> R.raw.few_clouds
+            "03n" -> R.raw.few_clouds
+            "04n" -> R.raw.scat_clouds
+            "09n" -> R.raw.rain_anim
+            "10n" -> R.raw.rain_anim
+            "11n" -> R.raw.thunderstorm
+            "13n" -> R.raw.snow_anim
+            "50n" -> R.raw.mist
+            else -> R.raw.clear_sky_anim // Default case
+        }
+        animationView.setAnimation(animationResId)
+        animationView.playAnimation()
+    }
 
 }
