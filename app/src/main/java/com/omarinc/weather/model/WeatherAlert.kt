@@ -9,5 +9,6 @@ data class WeatherAlert(
     val locationName: String,
     val latitude: Double,
     val longitude: Double,
-    val alertTime: Long
+    val alertTime: Long,
+    var isNotificationEnabled: Boolean = false
 )

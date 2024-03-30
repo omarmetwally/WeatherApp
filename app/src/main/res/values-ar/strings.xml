@@ -73,8 +73,15 @@
     <string name="weather_alert">تنبيه الطقس</string>
     <string name="weather_Condition">حالة الطقس في </string>
     <string name="Dismiss_Button">اغلاق</string>
-    <string name="no_network">اعد الإتصال بالانترنت لكل تستطيع الإضافه</string>
+    <string name="no_network">اعد الإتصال بالانترنت اولاً</string>
     <string name="undo">تراجع</string>
+
+    <string name="notification_enabled">تم تفعيل الإشعار</string>
+    <string name="notification_disabled">تم إيقاف الإشعار</string>
+
+
+    <string name="clicked"> اختيرت</string>
+    <string name="deleted"> حذفت</string>
 
 
 

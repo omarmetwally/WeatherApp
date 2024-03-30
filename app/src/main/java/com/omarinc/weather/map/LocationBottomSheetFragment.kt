@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -31,6 +32,7 @@ import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
 import com.omarinc.weather.settings.SettingViewModel
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.weather.utilities.Constants
+import java.util.Random
 import java.util.concurrent.TimeUnit
 
 class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: Double,val fragmentType:String="",val timeStamp:Long=0) : BottomSheetDialogFragment() {
@@ -74,10 +76,17 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
 
             alertViewModel = ViewModelProvider(requireActivity(), factory).get(AlertViewModel::class.java)
 
+
+
+
             binding.btnSaveLocation.setOnClickListener {
-                registerNotification();
-                registerAlarm();
-                alertViewModel.insertAlert(WeatherAlert(locationName = location, latitude = lat, longitude = lng, alertTime = timeStamp))
+                val randomId = (System.currentTimeMillis() / 1000L) + Random().nextInt(9999)
+                val weatherAlert = WeatherAlert(id = randomId.toInt(), locationName = location, latitude = lat, longitude = lng, alertTime = timeStamp)
+
+                Log.i(TAG, "Aleeeert ID: ${weatherAlert.id}")
+                registerNotification(weatherAlert.id);
+                registerAlarm(weatherAlert.id);
+                alertViewModel.insertAlert(weatherAlert)
                 findNavController().navigateUp()
                 dismiss()
             }
@@ -118,7 +127,8 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
 
 
     @SuppressLint("ScheduleExactAlarm")
-    private fun registerAlarm() {
+     fun registerAlarm(alertId: Int) {
+        Log.i(TAG, "registerAlarm: $alertId $timeStamp $location")
         val alertTimeMillis = timeStamp
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra(Constants.LATITUDE_KEY, lat)
@@ -128,7 +138,7 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            0,
+            alertId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -143,7 +153,7 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
     }
 
 
-    private fun registerNotification() {
+     fun registerNotification(alertId: Int) {
         val alertDelay = timeStamp - System.currentTimeMillis()
         if (alertDelay > 0) {
             val data = Data.Builder()
@@ -157,7 +167,9 @@ class LocationBottomSheetFragment(val location:String,val lat: Double, val lng: 
                 .setInputData(data)
                 .build()
 
-            WorkManager.getInstance(requireContext()).enqueue(workRequest)
+//            WorkManager.getInstance(requireContext()).enqueue(workRequest)
+            WorkManager.getInstance(requireContext()).enqueueUniqueWork("Notification_$alertId", ExistingWorkPolicy.REPLACE, workRequest)
+
 
         }
 

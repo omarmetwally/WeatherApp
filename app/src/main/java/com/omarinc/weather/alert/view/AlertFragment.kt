@@ -1,9 +1,11 @@
 package com.omarinc.weather.alert.view
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -22,13 +24,16 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.omarinc.weather.R
+import com.omarinc.weather.alert.services.AlarmReceiver
 import com.omarinc.weather.alert.viewmodel.AlertViewModel
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
 import com.omarinc.weather.databinding.FragmentAlertBinding
 import com.omarinc.weather.db.WeatherLocalDataSourceImpl
+import com.omarinc.weather.map.LocationBottomSheetFragment
 import com.omarinc.weather.model.WeatherAlert
 import com.omarinc.weather.model.WeatherRepositoryImpl
 import com.omarinc.weather.network.WeatherRemoteDataSourceImpl
@@ -41,7 +46,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
-class AlertFragment : Fragment(), OnAlertClick {
+class AlertFragment : Fragment(), OnAlertClick, OnNotificationClick {
 
 
     private lateinit var binding: FragmentAlertBinding
@@ -50,6 +55,8 @@ class AlertFragment : Fragment(), OnAlertClick {
     private lateinit var settingsViewModel: SettingViewModel
     private val TAG = "AlertFragment"
     var onClick: OnAlertClick? = null
+    var onNotificationClick: OnNotificationClick? = null
+    private var notificationStates = mutableMapOf<Int, Boolean>()
 
 
     override fun onCreateView(
@@ -64,6 +71,7 @@ class AlertFragment : Fragment(), OnAlertClick {
         super.onViewCreated(view, savedInstanceState)
 
         onClick = this
+        onNotificationClick = this
         val factory = ViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherRemoteDataSourceImpl.getInstance(requireContext()),
@@ -98,18 +106,40 @@ class AlertFragment : Fragment(), OnAlertClick {
 
     private fun setupRecyclerView() {
 
-        myAlertAdapter = AlertAdapter {
-            onClick?.onDeleteAlertClick(it)
-        }
+
+        myAlertAdapter = AlertAdapter(
+            onDeleteClick = {
+                onClick?.onDeleteAlertClick(it)
+            },
+
+            onNotificationClick = {
+
+                onNotificationClick?.onNotificationClick(it)
+
+            }
+
+
+        )
+
+
+
+
+
         binding.rvAlerts.apply {
             adapter = myAlertAdapter
         }
 
         lifecycleScope.launch {
             viewModel.alert.collectLatest { alerts ->
+                alerts.forEach { alert ->
+                    notificationStates.putIfAbsent(alert.id, alert.isNotificationEnabled)
+                }
+
                 if (alerts.isEmpty()) {
                     binding.ivNoLocation.visibility = View.VISIBLE
                     binding.loadingLottie.visibility = View.VISIBLE
+                    myAlertAdapter.submitList(alerts)
+
                 } else {
                     binding.ivNoLocation.visibility = View.GONE
                     binding.loadingLottie.visibility = View.GONE
@@ -231,9 +261,36 @@ class AlertFragment : Fragment(), OnAlertClick {
 
     override fun onDeleteAlertClick(alert: WeatherAlert) {
         viewModel.deleteAlert(alert)
-        val snackbar = Snackbar.make(binding.root, "${alert.locationName} Deleted", Snackbar.LENGTH_LONG)
+        unregisterAlarm(alert.id)
+        unregisterNotification(alert.id)
+        Log.i(TAG, "onDeleteAlertClick: ${alert.id}")
+        val snackbar =
+            Snackbar.make(binding.root, "${alert.locationName} Deleted", Snackbar.LENGTH_LONG)
         snackbar.setAction(getString(R.string.undo)) {
-            viewModel.insertAlert(alert)
+
+
+            if (alert.alertTime < System.currentTimeMillis()) {
+                viewModel.insertAlert(alert)
+            } else {
+                viewModel.insertAlert(alert)
+                Helpers.registerAlarm(
+                    context = requireContext(),
+                    alertId = alert.id,
+                    lat = alert.latitude,
+                    lng = alert.longitude,
+                    locationName = alert.locationName,
+                    alertTimeMillis = alert.alertTime
+
+                )
+                Helpers.registerNotification(
+                    context = requireContext(),
+                    alertId = alert.id,
+                    lat = alert.latitude,
+                    lng = alert.longitude,
+                    locationName = alert.locationName,
+                    timeStamp = alert.alertTime
+                )
+            }
         }
         snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
         snackbar.show()
@@ -241,7 +298,66 @@ class AlertFragment : Fragment(), OnAlertClick {
     }
 
 
+    private fun unregisterAlarm(alertId: Int) {
+        Log.i(TAG, "unregisterAlarm: $alertId")
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alertId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+    }
+
+    private fun unregisterNotification(alertId: Int) {
+        WorkManager.getInstance(requireContext()).cancelUniqueWork("Notification_$alertId")
+    }
+
+    override fun onNotificationClick(alert: WeatherAlert) {
+        val currentState = notificationStates.getOrDefault(alert.id, false)
+        if (!currentState) {
+            Snackbar.make(
+                binding.root,
+                "${alert.locationName} ${getString(R.string.notification_disabled)}",
+                Snackbar.LENGTH_LONG
+            ).show()
+            unregisterAlarm(alert.id)
+            unregisterNotification(alert.id)
+        } else {
+            Snackbar.make(
+                binding.root,
+                "${alert.locationName} ${getString(R.string.notification_enabled)}",
+                Snackbar.LENGTH_LONG
+            ).show()
+
+            Helpers.registerAlarm(
+                context = requireContext(),
+                alertId = alert.id,
+                lat = alert.latitude,
+                lng = alert.longitude,
+                locationName = alert.locationName,
+                alertTimeMillis = alert.alertTime
+
+            )
+
+            Helpers.registerNotification(
+                context = requireContext(),
+                alertId = alert.id,
+                lat = alert.latitude,
+                lng = alert.longitude,
+                locationName = alert.locationName,
+                timeStamp = alert.alertTime
+            )
+
+        }
+
+
+        notificationStates[alert.id] = !currentState
+
+    }
 
 
 }

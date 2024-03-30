@@ -3,8 +3,10 @@ package com.omarinc.weather.utilities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,13 +25,19 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.omarinc.weather.R
+import com.omarinc.weather.alert.services.AlarmReceiver
 import com.omarinc.weather.alert.services.WeatherNotificationWorker
 import com.omarinc.weather.model.Coordinates
 import com.omarinc.weather.model.WeatherResponse
 import com.omarinc.weather.sharedpreferences.SharedPreferencesImpl
 import java.io.IOException
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 object Helpers {
 
@@ -198,6 +206,49 @@ object Helpers {
             @Suppress("DEPRECATION")
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
+        }
+    }
+
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    fun registerAlarm(context: Context, alertId: Int, lat: Double, lng: Double, locationName: String, alertTimeMillis: Long) {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(Constants.LATITUDE_KEY, lat)
+            putExtra(Constants.LONGITUDE_KEY, lng)
+            putExtra(Constants.LOCATION_NAME_KEY, locationName)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alertId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            alertTimeMillis,
+            pendingIntent
+        )
+    }
+
+    fun registerNotification(context: Context, alertId: Int, lat: Double, lng: Double, locationName: String, timeStamp: Long) {
+        Log.i(TAG, "registerNotification: $alertId $locationName")
+        val alertDelay = timeStamp - System.currentTimeMillis()
+        if (alertDelay > 0) {
+            val data = Data.Builder()
+                .putDouble(Constants.LATITUDE_KEY, lat)
+                .putDouble(Constants.LONGITUDE_KEY, lng)
+                .putString(Constants.LOCATION_NAME_KEY, locationName)
+                .build()
+
+            val workRequest = OneTimeWorkRequestBuilder<WeatherNotificationWorker>()
+                .setInitialDelay(alertDelay, TimeUnit.MILLISECONDS)
+                .setInputData(data)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniqueWork("Notification_$alertId", ExistingWorkPolicy.REPLACE, workRequest)
         }
     }
 

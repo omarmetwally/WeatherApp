@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.layoutDirection
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.omarinc.weather.R
 import com.omarinc.weather.currentHomeWeather.viewmodel.HomeViewModel
 import com.omarinc.weather.currentHomeWeather.viewmodel.ViewModelFactory
@@ -68,12 +69,24 @@ class SettingFragment : Fragment() {
         binding.rgLocation.setOnCheckedChangeListener { _, checkedId ->
             val source = when (checkedId) {
                 R.id.rbMap ->{
-                    val action = SettingFragmentDirections.actionSettingFragmentToMapFragment()
-                    action.fragmentType= Constants.FRAGMENT_TYPE_SETTINGS
 
-                    Log.i(TAG, "on Map Click: ${action.fragmentType}")
-                    findNavController().navigate(action)
-                    Constants.VALUE_MAP
+                   if(Helpers.isNetworkConnected(requireContext())){
+                       val action = SettingFragmentDirections.actionSettingFragmentToMapFragment()
+                       action.fragmentType= Constants.FRAGMENT_TYPE_SETTINGS
+
+                       Log.i(TAG, "on Map Click: ${action.fragmentType}")
+                       findNavController().navigate(action)
+                       Constants.VALUE_MAP
+                   }else{
+                       Snackbar.make(binding.root,"${getString(R.string.no_network)}", Snackbar.LENGTH_SHORT).show()
+                       binding.rbGps.isChecked=true
+                       binding.rbMap.isChecked=false
+                       Constants.VALUE_GPS
+
+
+                   }
+
+
                 }
                 R.id.rbGps -> Constants.VALUE_GPS
                 else -> Constants.VALUE_GPS

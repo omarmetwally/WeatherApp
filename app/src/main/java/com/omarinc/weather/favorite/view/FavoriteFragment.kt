@@ -87,7 +87,7 @@ class favoriteFragment : Fragment() {
         myFavoriteAdapter= FavoriteAdapter(
             onDeleteClick = { city ->
                 viewModel.deleteFavorite(city)
-                val snackbar = Snackbar.make(binding.root, "${city.cityName} Deleted", Snackbar.LENGTH_LONG)
+                val snackbar = Snackbar.make(binding.root, "${city.cityName} ${getString(R.string.deleted)}", Snackbar.LENGTH_LONG)
                 snackbar.setAction(getString(R.string.undo)) {
                     viewModel.insertFavorite(city)
                 }
@@ -98,10 +98,19 @@ class favoriteFragment : Fragment() {
 
             },
             onCityClick = { city ->
-                val action=favoriteFragmentDirections.actionFavoriteFragmentToHomeFragment()
-                action.city=city
-                findNavController().navigate(action)
-                Snackbar.make(binding.root,"${city.cityName} clicked", Snackbar.LENGTH_SHORT).show()
+                if(Helpers.isNetworkConnected(requireContext()))
+                {
+                    val action=favoriteFragmentDirections.actionFavoriteFragmentToHomeFragment()
+                    action.city=city
+                    findNavController().navigate(action)
+                    Snackbar.make(binding.root,"${city.cityName} ${getString(R.string.clicked)}", Snackbar.LENGTH_SHORT).show()
+
+                }else{
+                    Snackbar.make(binding.root,"${getString(R.string.no_network)}", Snackbar.LENGTH_SHORT).show()
+
+                }
+
+
             }
         )
 
@@ -114,6 +123,8 @@ class favoriteFragment : Fragment() {
                 if (cities.isEmpty()) {
                     binding.ivNoLocation.visibility = View.VISIBLE
                     binding.loadingLottie.visibility = View.VISIBLE
+                    myFavoriteAdapter.submitList(cities)
+
                 } else {
                     binding.ivNoLocation.visibility = View.GONE
                     binding.loadingLottie.visibility = View.GONE

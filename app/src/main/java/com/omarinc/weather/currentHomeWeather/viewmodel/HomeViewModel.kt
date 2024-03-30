@@ -26,6 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -197,15 +200,19 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
 
 
 
-    private var _weatherDB=MutableStateFlow<DataBaseState<WeatherResponse>>(DataBaseState.Loading)
-    val weatherDB:StateFlow<DataBaseState<WeatherResponse>> = _weatherDB
+//    private var _weatherDB=MutableStateFlow<DataBaseState<WeatherResponse>>(DataBaseState.Loading)
+//    val weatherDB:StateFlow<DataBaseState<WeatherResponse>> = _weatherDB
+
+     private var _weatherDB=MutableStateFlow<WeatherResponse?>(null)
+     val weatherDB:StateFlow<WeatherResponse?> = _weatherDB
+
 
 
 
     fun insertCashedData(weatherResponse: WeatherResponse)
     {
         viewModelScope.launch(Dispatchers.IO) {
-           _repo.deleteCashedData()
+//           _repo.deleteCashedData()
             _repo.insertCashedData(weatherResponse)
         }
     }
@@ -220,21 +227,11 @@ class HomeViewModel (private val _repo: WeatherRepository, val context: Context)
         viewModelScope.launch(Dispatchers.IO) {
 
             _repo.getCashedData()?.catch {
-                    e->_weatherDB.value=DataBaseState.Failure(e)
+                    e-> Log.e("HomeViewModel", "Failed to fetch cached data: ${e.message}")
+
             }
                 ?.collect{data->
-
-                    try {
-                        _weatherDB.value=DataBaseState.SuccessObj(data)
-
-                    }
-                    catch (e:Exception)
-                    {
-                        _weatherDB.value=DataBaseState.Failure(e)
-
-                    }
-
-                }
+                        _weatherDB.value=data }
         }
     }
 

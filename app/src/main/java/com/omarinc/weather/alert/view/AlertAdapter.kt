@@ -2,6 +2,7 @@ package com.omarinc.weather.alert.view
 
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.DiffUtil
@@ -14,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit) : ListAdapter<WeatherAlert, AlertAdapter.ViewHolder>(
+class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit,private val onNotificationClick: (notification:WeatherAlert)->Unit) : ListAdapter<WeatherAlert, AlertAdapter.ViewHolder>(
     AlertDiffUtil()
 ) {
 
@@ -24,6 +25,8 @@ class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit) : Lis
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        var flag:Boolean=false
         val currentAlert = getItem(position)
         val animation =
             AnimationUtils.loadAnimation(holder.itemView.context, R.anim.scale_in_animation)
@@ -39,7 +42,28 @@ class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit) : Lis
                 tvDateTime.setTextColor(holder.itemView.context.getColor(R.color.red))
                 tvCity.paintFlags = tvDateTime.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                 tvCity.setTextColor(holder.itemView.context.getColor(R.color.red))
+                ivIconNotification.visibility= View.GONE
             }
+
+
+            ivIconNotification.setOnClickListener{
+
+
+                if(!flag){
+                    ivIconNotification.setImageResource(R.drawable.ic_alert_off_notification)
+                    onNotificationClick(currentAlert)
+                    flag=true
+                }
+                else{
+                    ivIconNotification.setImageResource(R.drawable.ic_alert_notification)
+                    onNotificationClick(currentAlert)
+                    flag=false
+
+
+                }
+            }
+
+
 
         }
     }

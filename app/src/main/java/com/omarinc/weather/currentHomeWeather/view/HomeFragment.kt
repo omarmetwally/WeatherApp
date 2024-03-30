@@ -130,7 +130,8 @@ class HomeFragment : Fragment() {
 
                     is ApiState.Success -> {
                         if (flag) {
-//                            viewModel.deleteCashedData()
+                            viewModel.deleteCashedData()
+                            Log.i(TAG, "flag: ${result.weatherResponse}")
                             viewModel.insertCashedData(result.weatherResponse)
                         }
 
@@ -229,34 +230,20 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.weatherDB.collectLatest { result ->
-                when (result) {
-                    is DataBaseState.Loading -> {
-                        /// loading
-                        Log.i(TAG, "setupRecyclerView: load")
-                        setVisibility(false)
-                    }
+                if (result!=null)
+                {
 
-                    is DataBaseState.SuccessObj -> {
-                        Log.i(TAG, "setupRecyclerView: Succ")
+                    viewModel.extractFiveDayForecast(result.list)
+                    viewModel.extractTodayForecast(result.list)
 
-                        if (result.weatherResponse != null) {
-                            viewModel.extractFiveDayForecast(result.weatherResponse.list)
-                            viewModel.extractTodayForecast(result.weatherResponse.list)
+                    setupRecyclerView()
+                    detailsForecastUI(result.list)
+                    currentForecastUI(result)
+                    setVisibility(true)
 
-                            setupRecyclerView()
-                            detailsForecastUI(result.weatherResponse.list)
-                            currentForecastUI(result.weatherResponse)
-                            setVisibility(true)
-                        }
-
-
-                    }
-
-                    is DataBaseState.Failure -> {
-                        Log.i(TAG, "setupRecyclerView Failure ")
-                    }
-
-                    else -> {}
+                }else{
+                    Log.i(TAG, "setupRecyclerView: load")
+                    setVisibility(false)
                 }
 
             }
