@@ -1,6 +1,8 @@
-# Weather - Your Forecaste Guide -
+# Weather - Your Forecast Guide -
 ## Play Store Link:
 Soon (In review)
+## API Documentation
+https://openweathermap.org/forecast5
 ## Features
 
 ### Weather Updates:
