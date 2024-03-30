@@ -75,4 +75,13 @@ class AlertViewModel  (private val _repo: WeatherRepository, val context: Contex
                 }
         }
     }
+
+
+    fun toggleAlertNotificationState(alertId: Int, isEnabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repo.toggleAlertNotificationState(alertId, isEnabled)
+//            getAllAlerts()
+        }
+    }
+
 }

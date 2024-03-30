@@ -93,5 +93,8 @@ class FakeWeatherRepository : WeatherRepository {
     }
 
     override fun getCashedData(): Flow<WeatherResponse> = _cachedData.filterNotNull()
+    override suspend fun toggleAlertNotificationState(alertId: Int, isEnabled: Boolean) {
+        TODO("Not yet implemented")
+    }
 
 }

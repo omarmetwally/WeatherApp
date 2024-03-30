@@ -317,8 +317,12 @@ class AlertFragment : Fragment(), OnAlertClick, OnNotificationClick {
     }
 
     override fun onNotificationClick(alert: WeatherAlert) {
-        val currentState = notificationStates.getOrDefault(alert.id, false)
-        if (!currentState) {
+//        val currentState = notificationStates.getOrDefault(alert.id, false)
+
+        val newState = !alert.isNotificationEnabled
+        viewModel.toggleAlertNotificationState(alert.id, newState)
+
+        if(!newState){
             Snackbar.make(
                 binding.root,
                 "${alert.locationName} ${getString(R.string.notification_disabled)}",
@@ -326,7 +330,8 @@ class AlertFragment : Fragment(), OnAlertClick, OnNotificationClick {
             ).show()
             unregisterAlarm(alert.id)
             unregisterNotification(alert.id)
-        } else {
+        }
+        else{
             Snackbar.make(
                 binding.root,
                 "${alert.locationName} ${getString(R.string.notification_enabled)}",
@@ -351,11 +356,8 @@ class AlertFragment : Fragment(), OnAlertClick, OnNotificationClick {
                 locationName = alert.locationName,
                 timeStamp = alert.alertTime
             )
-
         }
 
-
-        notificationStates[alert.id] = !currentState
 
     }
 

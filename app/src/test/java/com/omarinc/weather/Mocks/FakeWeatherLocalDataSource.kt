@@ -41,4 +41,7 @@ class FakeWeatherLocalDataSource : WeatherLocalDataSource {
     }
 
     override fun getCashedData(): Flow<WeatherResponse>? = cashedData?.let { flowOf(it) }
+    override suspend fun toggleAlertNotificationState(alertId: Int, isEnabled: Boolean) {
+        TODO("Not yet implemented")
+    }
 }

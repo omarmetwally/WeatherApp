@@ -44,20 +44,25 @@ class AlertAdapter (private val onDeleteClick:(alert: WeatherAlert)->Unit,privat
                 tvCity.setTextColor(holder.itemView.context.getColor(R.color.red))
                 ivIconNotification.visibility= View.GONE
             }
+            if(!currentAlert.isNotificationEnabled)
+            {
+                ivIconNotification.setImageResource(R.drawable.ic_alert_off_notification)
+
+            }
 
 
             ivIconNotification.setOnClickListener{
 
 
-                if(!flag){
+                if(!currentAlert.isNotificationEnabled){
                     ivIconNotification.setImageResource(R.drawable.ic_alert_off_notification)
                     onNotificationClick(currentAlert)
-                    flag=true
+//                    flag=true
                 }
                 else{
                     ivIconNotification.setImageResource(R.drawable.ic_alert_notification)
                     onNotificationClick(currentAlert)
-                    flag=false
+//                    flag=false
 
 
                 }
