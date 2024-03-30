@@ -8,6 +8,7 @@ import com.omarinc.weather.model.WeatherRepository
 import com.omarinc.weather.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
@@ -32,26 +33,29 @@ class FakeWeatherRepository : WeatherRepository {
 
     override suspend fun deleteFavorite(city: FavoriteCity) {
         val updatedFavorite = _favorites.value.toMutableList().apply { remove(city) }
-        _favorites.emit(updatedFavorite)    }
+        _favorites.emit(updatedFavorite)
+    }
 
     override suspend fun getAllFavorites(): Flow<List<FavoriteCity>> = _favorites
 
+
+    private val preferences = mutableMapOf<String, Any>()
+
     override fun writeStringToSharedPreferences(key: String, value: String) {
-        TODO("Not yet implemented")
+        preferences[key] = value
     }
 
     override fun readStringFromSharedPreferences(key: String): String {
-        TODO("Not yet implemented")
+        return preferences[key] as? String ?: ""
     }
 
     override fun writeCoordinatesToSharedPreferences(key: String, value: Double) {
-        TODO("Not yet implemented")
+        preferences[key] = value
     }
 
     override fun readSCoordinatesFromSharedPreferences(key: String): Double {
-        TODO("Not yet implemented")
+        return preferences[key] as? Double ?: 0.0
     }
-
 
     private val _alerts = MutableStateFlow<List<WeatherAlert>>(emptyList())
 
@@ -72,16 +76,22 @@ class FakeWeatherRepository : WeatherRepository {
 
     override fun getAllAlerts(): Flow<List<WeatherAlert>> = _alerts
 
+
+
+    private val _cachedData = MutableStateFlow<WeatherResponse?>(null)
+
+
     override suspend fun insertCashedData(weatherResponse: WeatherResponse) {
-        TODO("Not yet implemented")
+//        val updatedCachedData = _cachedData.value.toMutableList().apply { add(weatherResponse) }
+//        _cachedData.emit(updatedCachedData)
+        _cachedData.value= weatherResponse
+
     }
 
     override suspend fun deleteCashedData() {
-        TODO("Not yet implemented")
+        _cachedData.value= null
     }
 
-    override fun getCashedData(): Flow<WeatherResponse>? {
-        TODO("Not yet implemented")
-    }
+    override fun getCashedData(): Flow<WeatherResponse> = _cachedData.filterNotNull()
 
 }
