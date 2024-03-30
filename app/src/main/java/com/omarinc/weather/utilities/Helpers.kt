@@ -253,7 +253,6 @@ object Helpers {
         }
     }
 
-
     fun setLottieAnimation(id: String, animationView: LottieAnimationView) {
         val animationResId = when (id) {
             "01d" -> R.raw.clear_sky_anim
