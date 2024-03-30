@@ -353,6 +353,7 @@ class HomeFragment : Fragment() {
 
         }
 
+
 //        binding.tvLocationName.text = "${weather.city.name} ,${weather.city.country}"
         binding.tvDate.text = "$currentDate"
         Log.i(TAG, "currentForecastUI: ${viewModel.todayForecast.value}")

@@ -259,7 +259,7 @@ object Helpers {
             "01d" -> R.raw.clear_sky_anim
             "02d" -> R.raw.few_clouds
             "03d" -> R.raw.few_clouds
-            "04d" -> R.raw.scat_clouds
+            "04d" -> R.raw.few_clouds
             "09d" -> R.raw.rain_anim
             "10d" -> R.raw.rain_anim
             "11d" -> R.raw.thunderstorm
@@ -268,13 +268,13 @@ object Helpers {
             "01n" -> R.raw.clear_sky_anim_night
             "02n" -> R.raw.few_clouds
             "03n" -> R.raw.few_clouds
-            "04n" -> R.raw.scat_clouds
+            "04n" -> R.raw.few_clouds
             "09n" -> R.raw.rain_anim
             "10n" -> R.raw.rain_anim
             "11n" -> R.raw.thunderstorm
             "13n" -> R.raw.snow_anim
             "50n" -> R.raw.mist
-            else -> R.raw.clear_sky_anim // Default case
+            else -> R.raw.clear_sky_anim
         }
         animationView.setAnimation(animationResId)
         animationView.playAnimation()
