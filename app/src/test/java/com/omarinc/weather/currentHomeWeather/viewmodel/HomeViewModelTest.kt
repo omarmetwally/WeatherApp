@@ -3,7 +3,7 @@ package com.omarinc.weather.currentHomeWeather.viewmodel
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.omarinc.weather.FakeWeatherRepository
+import com.omarinc.weather.Mocks.FakeWeatherRepository
 import com.omarinc.weather.model.*
 import com.omarinc.weather.network.ApiState
 import io.mockk.mockk

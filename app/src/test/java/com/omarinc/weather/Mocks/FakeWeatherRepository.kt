@@ -1,4 +1,4 @@
-package com.omarinc.weather
+package com.omarinc.weather.Mocks
 
 import android.util.Log
 import com.omarinc.weather.model.Coordinates
@@ -8,7 +8,6 @@ import com.omarinc.weather.model.WeatherRepository
 import com.omarinc.weather.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
